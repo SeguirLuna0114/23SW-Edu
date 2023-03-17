@@ -5,4 +5,4 @@ all : $(PROGS)
 % : %.c
 	gcc -o $@ $^
 clean : $(PROGS)
-	rm -rf $
+	rm -rf $^
