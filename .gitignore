@@ -1,6 +1,13 @@
 # .gitignore
 
+.ftpconfig
+
+## c programing
 c/**/a.out
 c/**/hello
 c/**/*.o
-c/**/test*
+c/**/test
+
+## java
+
+java/*.class
