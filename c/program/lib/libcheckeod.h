@@ -1,0 +1,2 @@
+int checkeod (int);
+
