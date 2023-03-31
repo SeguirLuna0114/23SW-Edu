@@ -8,10 +8,14 @@ c/**/hello
 c/**/*.o
 c/**/test
 
+
 ## java
 java/*.class
 
 ## scala
 scala/**/project
 scala/**/target
+
+## maven
+maven/target
 
