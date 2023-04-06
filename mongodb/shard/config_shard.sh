@@ -3,6 +3,12 @@
 # default mongodb daemon stop.
 systemctl stop mongod
 
+# stop shard process
+./stop_shard.sh
+
+export IP_TEMP=$(ip addr | grep enp0s3 | grep inet | cut -d " " -f6 | cut -d "/" -f1 )
+echo $IP_TEMP
+
 # remove data directory
 if [ -d data ]; then
     rm -rf ./data
