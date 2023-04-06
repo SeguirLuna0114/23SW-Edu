@@ -49,5 +49,7 @@ mongo 192.168.1.57:27022 < rs.init
 ps -ef | grep mongo
 sleep 2s
 
+mongo $IP_TEMP:27017 < rs.addShard
+
 # netstatus
 netstat -ntlp
