@@ -46,8 +46,15 @@ app.get('/selectQuery', (req, res) => {
 // request 1, query 1
 app.post('/selectQuery', (req, res) => {
     const userid = req.body.userid;
-    const result = connection.query("select * from user where userid=?",
-    [userid]);
+    const result = connection.query("select * from user where userid=?", [userid]);
+    console.log(result);
+    res.send(result);
+})
+
+// request 1, query 1
+app.post('/insert', (req, res) => {
+    const { id, pw } = req.body;
+    const result = connection.query("insert into user values (?, ?)", [id, pw]);
     console.log(result);
     res.send(result);
 })
