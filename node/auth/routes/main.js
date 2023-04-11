@@ -21,4 +21,35 @@ app.get('/hello', (req, res) => {
     res.send('hello world~!!')
 })
 
+// request 1, query 0
+app.get('/select', (req, res) => {
+    const result = connection.query('select * from user');
+    console.log(result);
+    res.send(result);
+})
+
+// request 1, query 0
+app.post('/select', (req, res) => {
+    const result = connection.query('select * from user');
+    console.log(result);
+    res.send(result);
+})
+
+// request 1, query 1
+app.get('/selectQuery', (req, res) => {
+    const userid = req.query.userid;
+    const result = connection.query("select * from user where userid=?", [userid]);
+    console.log(result);
+    res.send(result);
+})
+
+// request 1, query 1
+app.post('/selectQuery', (req, res) => {
+    const userid = req.body.userid;
+    const result = connection.query("select * from user where userid=?",
+    [userid]);
+    console.log(result);
+    res.send(result);
+})
+
 module.exports = app;

@@ -6,5 +6,29 @@
     </head>
     <body>
         <h3>User Authentication</h3>
+        <hr />
+        <form name="userForm">
+            <p>Userid : <input type="text" size="15" name="id" /></p>
+            <p>password : <input type="password" size="15" name="pw" /></p>
+            <input 
+                type="button" 
+                value="get select" 
+                onclick='document.targetURL.location.href="/select"'
+            />&nbsp;&nbsp;
+            <input 
+                type="button" 
+                value="get selectQuery" 
+                onclick='document.targetURL.location.href="/selectQuery?userid"
+                +document.userForm.id.value'
+            />&nbsp;&nbsp;
+        </form>
+        <hr />
+        <iframe
+            name="targetURL"
+            width="70%"
+            height="500"
+            style="border: none"
+            srv="/hello"
+        ></iframe>
     </body>
 </html>
