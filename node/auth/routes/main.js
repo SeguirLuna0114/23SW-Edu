@@ -69,7 +69,7 @@ app.post('/update', (req, res) => {
 
 // request 1, query 1
 app.post('/delete', (req, res) => {
-    const id = req.body;
+    const id = req.body.id;
     const result = connection.query("delete from user where userid=?", [id]);
     console.log(result);
     res.redirect('/select');
