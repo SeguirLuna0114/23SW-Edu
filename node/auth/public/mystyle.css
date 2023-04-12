@@ -1,0 +1,58 @@
+body {
+    background-color: rgb(155, 232, 235);
+    font: bold 19px monospace, sans-serif;
+}
+h3 {
+    color: lightslategray;
+    margin-left: 20px;
+}
+hr {
+    border: 5px solid rgb(198, 164, 253);
+}
+input {
+    color: rgb(31, 156, 240);
+    font-size: 15px;
+}
+button {
+    color: rgb(248, 204, 110);
+    font-size: 15px;
+}
+a {
+	font-family: monospace;
+    font-size: 18px;
+    color: rgb(238, 206, 27);
+}
+input[type="text"] {
+    background-color: rgb(253, 206, 187);
+}
+input[type="password"] {
+    background-color: lemonchiffon;
+}
+#round { 
+    border-image: url("media/border.png") 30 round; 
+}
+#repeat {
+    border-image: url("media/border.png") 30 repeat; 
+}
+#stretch { 
+    border-image: url("media/border.png") 30 stretch; 
+}
+div.box {
+	background : rgb(197, 250, 213);
+	border-style : solid;
+ 	border-color : rgb(147, 241, 59);
+    border-radius : 35px;
+    border-image: ;
+    width: 350px;
+    height: 180px;
+
+	margin : 100px;
+	border-width : 1px;	
+	padding : 50px;
+}
+div.box-inner {
+    border-style : none; 
+    text-align: center;
+	margin : 10px;
+	padding : 10px;
+}
