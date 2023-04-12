@@ -53,16 +53,16 @@ app.post('/selectQuery', (req, res) => {
 
 // request O, query O
 app.post('/insert', (req, res) => {
-    const { id, pw } = req.body;
-    const result = connection.query("insert into userTbl values (?, ?)", [id, pw]);
+    const { id, name, mobile, gender, birth, mdate } = req.body;
+    const result = connection.query("insert into userTbl values (?, ?, ?, ?, ?, ?)", [id, name, mobile, gender, birth, mdate]);
     console.log(result);
     res.redirect('/selectQuery?userid=' + req.body.id);
 })
 
 // request O, query O
 app.post('/update', (req, res) => {
-    const { id, pw } = req.body;
-    const result = connection.query("update userTbl set passwd=? where userID=?", [pw, id]);
+    const { id, name, mobile, gender, birth, mdate } = req.body;
+    const result = connection.query("update userTbl set Name=?, Mobile=?, Gender=?, Birth=?, mDate=? where userID=?", [id, name, mobile, gender, birth, mdate]);
     console.log(result);
     res.redirect('/selectQuery?userid=' + req.body.id);
 })

@@ -1,40 +1,30 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Sign In</title>
-  </head>
-  <body>
-    <h3>User Information</h3>
-    <hr>
-    <form action="/insert" target="targetURL" name="userForm" method="post">
-      <p>Userid  <input type="text" size="15" name="id" /></p>
-      <p>Password  <input type="password" size="15" name="pw" /></p> 
-      <p>Address  <input type="text" size="20" name="addr" /></p>  
-      <p>Birth  <input type="datetime" size="20" name="bday" /></p>  
-      <p>Phone_number  <input type="number" size="12" name="number" /></p>   
-      <p>Screen_size  <input type="text" size="20" name="cpu" /></p>  
-      <input type="button" 
-      value="get select" 
-      onclick='document.targetURL.location.href="/select"'
-      />&nbsp;&nbsp;   
-      <input 
-      type="button" 
-      value="get selectQuery" 
-      onclick='document.targetURL.location.href="/selectQuery?userid="
-      +document.userForm.id.value'
-      />&nbsp;&nbsp;
-      <input type="submit" value="post insert" />&nbsp;&nbsp;
-      <button type="submit" formaction="/update">post update</button>&nbsp;&nbsp;
-      <button type="submit" formaction="/delete">post delete</button>&nbsp;&nbsp;
-    </form>
-    <hr />
-    <iframe 
-    name="targetURL" 
-    width="70%" 
-    height="500" 
-    style="border: none;"
-    src="/hello"
-    ></iframe>
-  </body>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Sign In</title>
+</head>
+
+<body>
+  <h3>User Information</h3>
+  <hr>
+  <form action="/insert" target="targetURL" name="userForm" method="post">
+    <p>UserID <input type="text" size="15" name="id" /></p>
+    <p>Name <input type="text" size="15" name="name" /></p>
+    <p>Mobile <input type="number" size="20" name="mobile" /></p>
+    <p>Gender <input type="text" size="20" name="gender" /></p>
+    <p>Birth <input type="date" size="12" name="birth" /></p>
+    <p>mDate <input type="datetime" size="20" name="mdate" /></p>
+    <input type="button" value="get select" onclick='document.targetURL.location.href="/select"' />&nbsp;&nbsp;
+    <input type="button" value="get selectQuery" onclick='document.targetURL.location.href="/selectQuery?userid="
+      +document.userForm.id.value' />&nbsp;&nbsp;
+    <input type="submit" value="post insert" />&nbsp;&nbsp;
+    <button type="submit" formaction="/update">post update</button>&nbsp;&nbsp;
+    <button type="submit" formaction="/delete">post delete</button>&nbsp;&nbsp;
+  </form>
+  <hr />
+  <iframe name="targetURL" width="70%" height="500" style="border: none;" src="/hello"></iframe>
+</body>
+
 </html>
