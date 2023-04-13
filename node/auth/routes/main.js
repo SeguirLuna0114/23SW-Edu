@@ -45,8 +45,8 @@ app.post('/register', (req, res) => {
     if (id == "") {   //id가 공백으로 뜰 경우
         res.redirect('register.html')
     } else { //입력은 됨
-        let result = connection.query("select * from user where userid=?", [id]);
-        if (result[0].userid == id) { //내가 입력한 ID가 기존 존재할 경우
+        let result = connection.query("select * from user where userid=?", [id]); //'let'으로 이미 한번 선언된 변수
+        if (result.length > 0) { //내가 입력한 ID가 기존 존재할 경우
             res.writeHead(200); //HTML 태그작성 with ``
             var template = `
             <!doctype html>  
