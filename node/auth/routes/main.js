@@ -26,10 +26,10 @@ app.post('/login', (req, res) => {
     const { id, pw } = req.body;
     const result = connection.query("select * from user where userid=? and passwd=?", [id, pw]);
     // condole.log(result);
-    if (result.length == 0) {
+    if (result.length == 0) { //입력돤 결과가 없는 경우
         res.redirect('error.html')
     }
-    if (id == 'admin' || id == 'root') {
+    if (id == 'admin' || id == 'root') { 
         console.log(id + " => Administrator Logined")
         res.redirect('member.html')
     } else {
