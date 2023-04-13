@@ -25,9 +25,10 @@ app.get('/hello', (req, res) => {
 app.get('/select', (req, res) => {
     const result = connection.query('select * from user');
     console.log(result);
-    //res.send(result);
+    // res.send(result);
     res.writeHead(200);
-    var template = `
+    if (result.length == 0) {
+        var template = `
         <!doctype html>
         <html>
         <head>
@@ -36,112 +37,154 @@ app.get('/select', (req, res) => {
             <link type="text/css" rel="stylesheet" href="mystyle.css" />
         </head>
         <body>
-            <table border="1" style="margin:auto; text-align:center;">
-            <thead>
-                <tr><th>User ID</th><th>Password</th></tr>
-            </thead>
+            <h3>데이터가 존재하지 않습니다.</h3>
+        </body>
+        </html>
+        `;
+        res.end(template);
+    } else {
+        var template = `
+        <!doctype html>
+        <html>
+        <head>
+            <title>Result</title>
+            <meta charset="utf-8">
+            <link type="text/css" rel="stylesheet" href="mystyle.css" />
+        </head>
+        <body>
+        <table border="1" style="margin:auto;">
+        <thead>
+            <tr><th>User ID</th><th>Password</th></tr>
+        </thead>
         <tbody>
         `;
-    for (var i = 0; i < result.length; i++) {
-        template += `
+        for (var i = 0; i < result.length; i++) {
+            template += `
         <tr>
             <td>${result[i]['userid']}</td>
             <td>${result[i]['passwd']}</td>
         </tr>
         `;
-    }
-    template += `
+        }
+        template += `
         </tbody>
         </table>
         </body>
         </html>
-    `;
-    res.end(template);
+        `;
+        res.end(template);
+    }
 })
 
 // request O, query X
 app.post('/select', (req, res) => {
     const result = connection.query('select * from user');
     console.log(result);
-    res.send(result);
+    // res.send(result);
+    res.writeHead(200);
+    if (result.length == 0) {
+        var template = `
+        <!doctype html>
+        <html>
+        <head>
+            <title>Result</title>
+            <meta charset="utf-8">
+            <link type="text/css" rel="stylesheet" href="mystyle.css" />
+        </head>
+        <body>
+            <h3>데이터가 존재하지 않습니다.</h3>
+        </body>
+        </html>
+        `;
+        res.end(template);
+    } else {
+        var template = `
+        <!doctype html>
+        <html>
+        <head>
+            <title>Result</title>
+            <meta charset="utf-8">
+            <link type="text/css" rel="stylesheet" href="mystyle.css" />
+        </head>
+        <body>
+        <table border="1" style="margin:auto;">
+        <thead>
+            <tr><th>User ID</th><th>Password</th></tr>
+        </thead>
+        <tbody>
+        `;
+        for (var i = 0; i < result.length; i++) {
+            template += `
+        <tr>
+            <td>${result[i]['userid']}</td>
+            <td>${result[i]['passwd']}</td>
+        </tr>
+        `;
+        }
+        template += `
+        </tbody>
+        </table>
+        </body>
+        </html>
+        `;
+        res.end(template);
+    }
 })
 
 // request O, query O
 app.get('/selectQuery', (req, res) => {
     const id = req.query.id;
-    if (id == "") {
-        res.writeHead(200);
+    const result = connection.query("select * from user where userid=?", [id]);
+    console.log(result);
+    // res.send(result);
+    res.writeHead(200);
+    if (result.length == 0) {
         var template = `
-    <!doctype html>
-    <html>
-    <head>
-        <title>Error</title>
-        <meta charset="utf-8">
-        <link type="text/css" rel="stylesheet" href="mystyle.css" />
-    </head>
-    <body>
-        <div>
-            <h3 style="margin-left: 30px">필드 입력</h3>
-        </div>
-    </body>
-    </html>
-    `;
+        <!doctype html>
+        <html>
+        <head>
+            <title>Result</title>
+            <meta charset="utf-8">
+            <link type="text/css" rel="stylesheet" href="mystyle.css" />
+        </head>
+        <body>
+            <h3>데이터가 존재하지 않습니다.</h3>
+        </body>
+        </html>
+        `;
         res.end(template);
     } else {
-        let result = connection.query("select * from user where userid=?", [id]);
-        if (result.length == 0) {
-            var template = `
-            <!doctype html>
-            <html>
-            <head>
-                <title>Error</title>
-                <meta charset="utf-8">
-                <link type="text/css" rel="stylesheet" href="mystyle.css" />
-            </head>
-            <body>
-                <div>
-                    <h3 style="margin-left: 30px">사용자가 존재하지 않음</h3>
-                </div>
-            </body>
-            </html>
-            `;
-                res.end(template);
-            } else {
-                const result = connection.query("select * from user where userid=?", [id]);
-                console.log(result);
-                //res.send(result);
-                res.writeHead(200);
-                var template2 = `
-                    <!doctype html>
-                    <html>
-                    <head>
-                        <title>Result</title>
-                        <meta charset="utf-8">
-                        <link type="text/css" rel="stylesheet" href="mystyle.css" />
-                    </head>
-                    <body>
-                    <table border="2" style="margin:auto; text-align:center;">
-                    <thead>
-                        <tr><th>User ID</th><th>Password</th></tr>
-                    </thead>
-                    <tbody>
-                    `;
-                for (var i = 0; i < result.length; i++) {
-                    template2 += `
-                    <tr>
-                        <td>${result[i]['userid']}</td>
-                        <td>${result[i]['passwd']}</td>
-                    </tr>
-                    `;
-                }
-                template2 += `
-                    </tbody>
-                    </table>
-                    </body>
-                    </html>
-                `;
-                res.end(template2);
-            }}
+        var template = `
+        <!doctype html>
+        <html>
+        <head>
+            <title>Result</title>
+            <meta charset="utf-8">
+            <link type="text/css" rel="stylesheet" href="mystyle.css" />
+        </head>
+        <body>
+        <table border="1" style="margin:auto;">
+        <thead>
+            <tr><th>User ID</th><th>Password</th></tr>
+        </thead>
+        <tbody>
+        `;
+        for (var i = 0; i < result.length; i++) {
+            template += `
+        <tr>
+            <td>${result[i]['userid']}</td>
+            <td>${result[i]['passwd']}</td>
+        </tr>
+        `;
+        }
+        template += `
+        </tbody>
+        </table>
+        </body>
+        </html>
+        `;
+        res.end(template);
+    }
 })
 
 // request O, query O
@@ -150,7 +193,55 @@ app.post('/selectQuery', (req, res) => {
     // console.log(req.body);
     const result = connection.query("select * from user where userid=?", [id]);
     console.log(result);
-    res.send(result);
+    // res.send(result);
+    res.writeHead(200);
+    if (result.length == 0) {
+        var template = `
+        <!doctype html>
+        <html>
+        <head>
+            <title>Result</title>
+            <meta charset="utf-8">
+            <link type="text/css" rel="stylesheet" href="mystyle.css" />
+        </head>
+        <body>
+            <h3>데이터가 존재하지 않습니다.</h3>
+        </body>
+        </html>
+        `;
+        res.end(template);
+    } else {
+        var template = `
+        <!doctype html>
+        <html>
+        <head>
+            <title>Result</title>
+            <meta charset="utf-8">
+            <link type="text/css" rel="stylesheet" href="mystyle.css" />
+        </head>
+        <body>
+        <table border="1" style="margin:auto;">
+        <thead>
+            <tr><th>User ID</th><th>Password</th></tr>
+        </thead>
+        <tbody>
+        `;
+        for (var i = 0; i < result.length; i++) {
+            template += `
+        <tr>
+            <td>${result[i]['userid']}</td>
+            <td>${result[i]['passwd']}</td>
+        </tr>
+        `;
+        }
+        template += `
+        </tbody>
+        </table>
+        </body>
+        </html>
+        `;
+        res.end(template);
+    }
 })
 
 // request O, query O
