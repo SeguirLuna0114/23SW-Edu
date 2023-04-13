@@ -1,25 +1,27 @@
+<!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <meta charset="utf-8" />
     <title>Register</title>
     <link type="text/css" rel="stylesheet" href="mystyle.css" />
-</head>
-
-<body>
+  </head>
+  <body>
     <h3>Register</h3>
     <hr />
-    <form action="/register" name="userForm" method="post">
-        <div class="box" style="text-align: center;">
-        <p>Userid &nbsp;&nbsp;: <input style="background-color: beige" type="text" size="15" name="id" /></p>
-        <p>Password : <input style="background-color: beige"type="password" size="15" name="pw" /></p>
-        <input style="margin-bottom: 15px;" type="submit" value="회원가입" />&nbsp;&nbsp;
-        <input style="margin-bottom: 15px;" type="reset" value="취소" />
-        <p>
+    <div class="box">
+      <form action="/register" name="userForm" method="post">
+        <p>User-id&nbsp;&nbsp;: <input type="text" size="15" name="id" /></p>
+        <p>Password : <input type="password" size="15" name="pw" /></p>
+        <div class="box-inner">
+          <p>
+            <input type="submit" value="회원가입" />&nbsp;&nbsp;
+            <input type="reset" value="취소" />
+          </p>
+          <p>
             <a href="/" style="text-decoration: none">로그인</a>
-        </p>
+          </p>
         </div>
-    </form>
-</body>
-
+      </form>
+    </div>
+  </body>
 </html>
