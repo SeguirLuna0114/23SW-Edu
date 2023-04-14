@@ -26,10 +26,10 @@ app.get('/select', (req, res) => {
     const result = connection.query('select * from user');
     console.log(result);
     // res.send(result);
-    res.writeHead(200);
+    res.writeHead(200); //200=성공했다는 뜻
     if (result.length == 0) {
-        var template = `
-        <!doctype html>
+        var template = ` 
+        <!doctype html> //html source 생성 (모든 view로 보여주는 부분은 'Public'의 영향을 받음)
         <html>
         <head>
             <title>Result</title>
@@ -53,12 +53,12 @@ app.get('/select', (req, res) => {
         </head>
         <body>
         <table border="1" style="margin:auto;">
-        <thead>
+        <thead>  //'head'는 한번만 등장
             <tr><th>User ID</th><th>Password</th></tr>
         </thead>
         <tbody>
         `;
-        for (var i = 0; i < result.length; i++) {
+        for (var i = 0; i < result.length; i++) { //result의 length만큼 반복할 것
             template += `
         <tr>
             <td>${result[i]['userid']}</td>
@@ -72,12 +72,12 @@ app.get('/select', (req, res) => {
         </body>
         </html>
         `;
-        res.end(template);
+        res.end(template); //'end'처리함
     }
 })
 
 // request O, query X
-app.post('/select', (req, res) => {
+app.post('/select', (req, res) => { //select는 parameter가 없기에, parameter검사 불필요
     const result = connection.query('select * from user');
     console.log(result);
     // res.send(result);
