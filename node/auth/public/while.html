@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>while 문</title>
+</head>
+<body>
+<h3>while 문으로 달력 출력</h3>
+<hr>
+<script>
+	let n = prompt("원하는 달의 일수를 입력하세요", 0);
+    n = parseInt(n); // 문자열을 숫자로 바꿈
+
+    let i=1, j=0;
+	while(i<=31) {
+		if (i%7 == 5)
+            document.write(<hr />);
+
+		
+        i++;
+	}
+
+</script>
+</body>
+</html>
