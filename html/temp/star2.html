@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>* 출력</title>
+</head>
+<body>
+<h3>* 출력</h3>
+<hr>
+<script>
+	let n = 7;
+	for(let i=1; i<=n; i++) { //입력한 n값까지 출력
+		for(let j=1; j<n-i+1; j++) { 
+            document.write("&nbsp;"); //공백 출력
+        }
+			for(let k=0; j<2*i-1; j++) { 
+				document.write("*"); //* 출력
+			}
+		document.write("<br>");
+	}
+</script>
+</body>
+</html>
