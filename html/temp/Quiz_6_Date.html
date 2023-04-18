@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Date 객체로 경과 시간 알아내기</title>
+</head>
+<body>
+<h3>Date 객체로 경과 시간 알아내기</h3>
+<hr>
+<script>
+	let now = new Date(); // 현재 시간 값을 가진 Date 객체 생성
+    document.write("현재 시간 : " + now.toString() + "<br>"
+    );
+    document.write(`<hr />`);
+
+    let past = new Date(2023, 2, 6, 9, 00, 00); // 2023년 3월 6일 09:00:00
+	document.write("기준 시간 : " + past.toString() + "<br>"
+	);
+    document.write(`<hr />`);
+
+
+    let diff = now - past;
+    let sec = diff / 1000;
+    let min = sec / 60;
+    let hour = min / 60;
+    let day = hour / 24;
+
+    document.write("경과 시간 - 일 : " + Math.round(day) + "<br>");
+    document.write("경과 시간 - 시 : " + Math.round(hour) + "<br>");
+    document.write("경과 시간 - 분 : " + Math.round(min) + "<br>");
+    document.write("경과 시간 - 초 : " + sec + "<br>");
+    document.write(`<hr />`);
+</script>
+</body>
+</html>
