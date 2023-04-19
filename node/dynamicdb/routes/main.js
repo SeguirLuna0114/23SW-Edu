@@ -29,7 +29,7 @@ app.get('/select', (req, res) => {
     res.writeHead(200); //200=성공했다는 뜻
     if (result.length == 0) {
         var template = ` 
-        <!doctype html> //html source 생성 (모든 view로 보여주는 부분은 'Public'의 영향을 받음)
+        <!doctype html>
         <html>
         <head>
             <title>Result</title>
@@ -53,7 +53,7 @@ app.get('/select', (req, res) => {
         </head>
         <body>
         <table border="1" style="margin:auto;">
-        <thead>  //'head'는 한번만 등장
+        <thead>
             <tr><th>User ID</th><th>Password</th></tr>
         </thead>
         <tbody>
