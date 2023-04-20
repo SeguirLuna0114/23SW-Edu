@@ -5,5 +5,23 @@
     <title>innerHTML 활용</title>
     <script>
         function Click() {
-        let Input = document.getElementById("userInput").value; // 텍스트 출력 userInput 값을 다 가져옴(값은 객체)
+            let input_v = document.getElementById("input").value;
+            let p = document.getElementById("output");
+                p.innerHTML = input_v;
+                console.log(input_v);
+        }
     </script>
+  </head>
+  <body>
+    <h3>innerHTML 활용</h3>
+    <hr />
+    <form>
+      <input type="text" id="input" onkeyup="Click()" />&nbsp;&nbsp;
+      <input type="button" value="Click" onclick="Click()" />
+    </form>
+    <hr />
+    <div>
+        <span id="output">Result</span>
+    </div>
+  </body>
+</html>
