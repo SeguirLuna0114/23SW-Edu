@@ -15,7 +15,59 @@ const app = express()
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true })); //여기까지는 건들 필요X
+
+function template_nodata(res) {
+    res.writeHead(200);
+    var template = `
+    <!doctype html>
+    <html>
+    <head>
+        <title>Result</title>
+        <meta charset="utf-8">
+        <link type="text/css" rel="stylesheet" href="mystyle.css" />
+    </head>
+    <body>
+        <h3>데이터가 존재하지 않습니다.</h3>
+    </body>
+    </html>
+    `;
+    res.end(template);
+}
+
+function template_result(result, res) {
+    res.writeHead(200);
+    var template = `
+    <!doctype html>
+    <html>
+    <head>
+        <title>Result</title>
+        <meta charset="utf-8">
+        <link type="text/css" rel="stylesheet" href="mystyle.css" />
+    </head>
+    <body>
+    <table border="1" style="margin:auto;">
+    <thead>
+        <tr><th>User ID</th><th>Password</th></tr>
+    </thead>
+    <tbody>
+    `;
+    for (var i = 0; i < result.length; i++) {
+        template += `
+    <tr>
+        <td>${result[i]['userid']}</td>
+        <td>${result[i]['passwd']}</td>
+    </tr>
+    `;
+    }
+    template += `
+    </tbody>
+    </table>
+    </body>
+    </html>
+    `;
+    res.end(template);
+}
 
 app.get('/hello', (req, res) => {
     res.send('hello world~!!')
