@@ -1,7 +1,7 @@
 use test
 db.userTbl.drop()
 
-db.userTbl.insert({userID:"admin", passwd:"1234", name:"한국인", gender:"female", state:"송파구", mobile:"010-5678-5678", laptutude:37.498842405829585, longitude:127.02746904471526})
-db.userTbl.insert({userID:"root", passwd:"1234", name:"홍길동", gender:"male", state:"서초구", mobile:"010-1234-1234", laptutude:37.49455357784708, longitude:127.02762578782303})
+db.userTbl.insert({userID:"admin", passwd:"1234", name:"한국인", gender:"female", state:"송파구", mobile:"010-5678-5678", lapti:37.498842405829585, longit:127.02746904471526})
+db.userTbl.insert({userID:"root", passwd:"1234", name:"홍길동", gender:"male", state:"서초구", mobile:"010-1234-1234", lapti:37.49455357784708, longit:127.02762578782303})
 
 db.userTbl.find()
