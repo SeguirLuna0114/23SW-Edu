@@ -38,7 +38,7 @@ app.get('/', (req, res) => {
     res.send("Web server Started~!!");
 })
 
-app.get("/Hello", function (req, res) {
+app.get('/hello', function (req, res) {
     res.send("Hello World~!!")
 })
 
@@ -53,9 +53,5 @@ app.get("/Hello", function (req, res) {
 //             })
 // }); // where state = req.query.input.state
 
-
-// app.listen(app.get('port'), () => {
-//     console.log('8000 Port : Server Started~!!');
-// })
 
 module.exports = app;

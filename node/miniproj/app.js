@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
 const app = express();
-
 app.set('port', process.env.PORT || 8000); //express 웹프레임워크를 이용하여 서버 띄우기
 app.use(morgan('dev'));
 app.use(bodyParser.json());
