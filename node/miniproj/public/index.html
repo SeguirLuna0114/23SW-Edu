@@ -2,13 +2,13 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>carwash</title>
+    <title>mongoose Example</title>
 </head>
 <body>
-    <h1>carwash login</h1>
+    <h1>mongoose Example</h1>
     <hr />
     <form method="post" name="mongoform" target="targetURL">
-        <input type="button" value="Users Collection" onclick='document.targetURL.location.href="/show_usrlist"' />
+        <input type="button" value="Users Collection" onclick='document.targetURL.location.href="/list"' />
         <p>
             userid <input type="text" size="10" name="userid" />
             <input type="button" value="get" onclick='document.targetURL.location.href="/get?input="+document.mongoform.userid.value' />
@@ -27,7 +27,7 @@
         </p>
     </form>
     <hr />
-    <iframe name="targetURL" class="iframe-preview center" width="90%" height="500" style="border: none" src="/hello">
+    <iframe name="targetURL" class="iframe-preview center" width="90%" height="500" style="border: none" src="/Hello">
     </iframe>
 </body>
 </html>

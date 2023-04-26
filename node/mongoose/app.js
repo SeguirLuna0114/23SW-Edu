@@ -13,9 +13,9 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 
-// mongoose configuration
+//mongoose configuration
 const mongoose = require("mongoose")
-mongoose.connect("mongodb://192.168.1.189:27017/test")
+mongoose.connect("mongodb://192.168.1.12:27017/test")
 
 var main = require('./routes/main.js')
 app.use('/', main)
