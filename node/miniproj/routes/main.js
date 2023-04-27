@@ -9,30 +9,21 @@ var carwashSchema = mongoose.Schema({
     state: String,
     industry: String,
     type: String,
-    address: String,
     off: String,
     dayopen: String,
     dayclose: String,
     holopen: String,
     holclose: String,
     TelNo: String,
-    location: {
-        type: {
-            type: String,
-            enum: ['Point'],
-            required: true
-        },
-        coordinates: {
-            type: [Number],
-            required: true
-        }
-    }
+    lapti: String,
+    longit: String,
+    address: String
 }, {
     versionKey: false
 });
 
 //create model with mongodb collection and schema
-var Carwash = mongoose.model('Carwash', carwashSchema);
+var Carwash = mongoose.model('carwashes', carwashSchema);
 
 app.get('/', (req, res) => {
     res.send("Web server Started~!!");
@@ -42,218 +33,184 @@ app.get('/hello', function (req, res) {
     res.send("Hello World~!!")
 })
 
-// select
-app.get('/select', function (req, res, next) {
-    var company = req.query.company;
-    var state = req.query.state;
-    var industry = req.query.industry;
-    var type = req.query.type;
-
-    var off = req.query.off;
-    var dayopen = req.query.dayopen;
-    var dayclose = req.query.dayclose;
-    var holopen = req.query.holopen;
-    var holclose = req.query.holclose;
-    var TelNo = req.query.TelNo;
-    var lapti = req.query.location.coordinates[1];
-    var longit = req.query.location.coordinates[0];
-    var address = req.query.address;
-    var carwash = new Carwash({ 'company': company, 'state': state, 'industry': industry, 'type': type, 'off': off, 'dayopen': dayopen, 'dayclose': dayclose, 'holopen': holopen, 'holclose': holclose, 'TelNo': TelNo, 'lapti': lapti, 'longit': longit, 'address': address, })
-    carwash.findOne({ 'state': "송파구" }, function (err, doc) {
-        if (err) console.log(err)
-        // res.send(doc)
-        res.send(JSON.stringify({ "ok": true, "carwash": doc }));
-            console.log(JSON.stringify({ "ok": true, "carwash": doc }));
-    })
-})
-
-// list
-app.get('/list', function (req, res, next) {
+// carwash_list
+app.get('/carwash_list', function (req, res, next) {
     Carwash.find({}, function (err, docs) {
-        if (err) console.log('err')
-        // res.send(docs)
-        res.send(JSON.stringify({ "ok": true, "carwash_list": docs }));
-            console.log(JSON.stringify({ "ok": true, "carwash_": docs }));
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ ok: false, db: "mongoose", service: "carwash_list", error: err });
+          }
+          if (docs.length > 0) {
+            res.status(200).json({ ok: true, carwash: docs });
+          } else {
+            res.status(404).json({ ok: false, db: "mongoose", service: "carwash_list", message: "No carwashes found" });
+          }
     })
 })
 
-// insert
-app.post('/insert', function (req, res, next) {
+//carwash_get_state
+app.get('/carwash_get_state', function (req, res, next) {
+    var state = req.query.state;
+    Carwash.findOne({ 'state': state }, { '_id': 0 }, function (err, docs) {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ ok: false, db: "mongoose", service: "carwash_get_state", error: err });
+      }
+      if (!docs) { // handle null value of carwash
+        return res.status(404).json({ ok: false, db: "mongoose", service: "carwash_get_state", message: "No carwash found" });
+      }
+      res.status(200).json({ ok: true, carwash: docs });
+    })
+})
+
+//carwash_get_state&type
+app.get('/carwash_get_state&type', function (req, res, next) {
+    var state = req.query.state;
+    var type = req.query.type;
+    Carwash.findOne({ 'state': state, 'type': type }, function (err, docs) {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ ok: false, db: "mongoose", service: "carwash_get_state & type", error: err });
+      }
+      if (!docs) { // handle null value of carwash
+        return res.status(404).json({ ok: false, db: "mongoose", service: "carwash_get_state & type", message: "No carwash found" });
+      }
+      res.status(200).json({ ok: true, carwash: docs });
+    })
+})
+
+// carwash_insert
+app.post('/carwash_insert', function (req, res, next) {
     var company = req.body.company;
     var state = req.body.state;
     var industry = req.body.industry;
     var type = req.body.type;
-
     var off = req.body.off;
     var dayopen = req.body.dayopen;
     var dayclose = req.body.dayclose;
     var holopen = req.body.holopen;
     var holclose = req.body.holclose;
     var TelNo = req.body.TelNo;
-    var lapti = req.body.location.coordinates[1];
-    var longit = req.body.location.coordinates[0];
+    var lapti = req.body.lapti;
+    var longit = req.body.longit;
     var address = req.body.address;
-    var carwash = new Carwash({ 'company': company, 'state': state, 'industry': industry, 'type': type, 'off': off, 'dayopen': dayopen, 'dayclose': dayclose, 'holopen': holopen, 'holclose': holclose, 'TelNo': TelNo, 'lapti': lapti, 'longit': longit, 'address': address, })
+  
+    var carwash = new Carwash({
+      'company': company,
+      'state': state,
+      'industry': industry,
+      'type': type,
+      'off': off,
+      'dayopen': dayopen,
+      'dayclose': dayclose,
+      'holopen': holopen,
+      'holclose': holclose,
+      'TelNo': TelNo,
+      'lapti': lapti,
+      'longit': longit,
+      'address': address
+    });
+  
+    carwash.save(function (err, doc) {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({
+          ok: false,
+          db: "mongoose",
+          service: "carwash_insert",
+          error: err
+        });
+      }
+      res.status(200).json({ ok: true, carwash: doc });
+    });
+});
 
-    carwash.save(function (err, silence) {
-            if (err) {
-                console.log('err')
-                res.status(500).send('insert error')
-                res.send('{ "ok": false }');
-                console.log('{ "ok": false }');
-                return;
-            }
-            res.status(200)
-            res.send('{ "ok": true, "carwash_id":' + JSON.stringify(carwash) + '}');
-            console.log('{ "ok": true, "carwash_id":' + JSON.stringify(carwash) + '}');
-        })
-})
-
-// update
-app.post('/update', function (req, res, next) {
+// carwash_update
+app.post('/carwash_update', function (req, res, next) {
     var company = req.body.company;
     var state = req.body.state;
     var industry = req.body.industry;
     var type = req.body.type;
-    var location = req.body.location;
     var off = req.body.off;
     var dayopen = req.body.dayopen;
     var dayclose = req.body.dayclose;
     var holopen = req.body.holopen;
     var holclose = req.body.holclose;
     var TelNo = req.body.TelNo;
-    var lapti = req.body.location.coordinates[1];
-    var longit = req.body.location.coordinates[0];
-
-    Carwash.findOne({ 'company': company }, function (err, carwash) {
-        if (err) {
-            console.log('err')
-            res.status(500).send('update error')
-            return;
-        }
-        carwash.state = state;
-        carwash.industry = industry;
-        carwash.type = type;
-        carwash.location = location;
-        carwash.off = off;
-        carwash.dayopen = dayopen;
-        carwash.dayclose = dayclose;
-        carwash.holopen = holopen;
-        carwash.holclose = holclose;
-        carwash.TelNo = TelNo;
-        carwash.lapti = lapti;
-        carwash.longit = longit;
-
-        carwash.save(function (err, silence) {
-            if (err) {
-                console.log('err')
-                res.status(500).send('update error')
-                return;
-            }
-            res.status(200).send("Updated")
+    var lapti = req.body.lapti;
+    var longit = req.body.longit;
+    var address = req.body.address;
+  
+    Carwash.findOne({ 'company': company }, function (err, docs) {
+      if (err) {
+        console.error(err);
+        res.status(500).json({
+          ok: false,
+          db: "mongoose",
+          service: "carwash_update",
+          error: err
         })
-    })
-})
+        return;
+      }
+      if (!docs) {
+        return res.status(404).json({
+          ok: false,
+          db: "mongoose",
+          service: "carwash_update",
+          message: "No carwash found"
+        })
+      }
+  
+      docs.state = state;
+      docs.industry = industry;
+      docs.type = type;
+      docs.off = off;
+      docs.dayopen = dayopen;
+      docs.dayclose = dayclose;
+      docs.holopen = holopen;
+      docs.holclose = holclose;
+      docs.TelNo = TelNo;
+      docs.lapti = lapti;
+      docs.longit = longit;
+      docs.address = address;
 
-
-// delete
-app.post('/delete', function (req, res, next) {
-    var company = req.body.company;
-    var carwash = Carwash.find({ 'company': company })
-    carwash.deleteOne(function (err) {
+      docs.save(function (err, updatedDoc) {
         if (err) {
-            console.log('err')
-            res.status(500).send('delete error')
-            return;
+          console.error(err);
+          return res.status(500).json({
+            ok: false,
+            db: "mongoose",
+            service: "carwash_update",
+            error: err
+          })
         }
-        res.status(200).send("Removed")
+        res.status(200).json({
+          ok: true,
+          db: "mongoose",
+          service: "carwash_update",
+          message: "Carwash updated successfully",
+          updated_carwash: updatedDoc
+        })
+      })
     })
 })
 
-function show_Position(result, res) {
-    res.writeHead(200);
-    var template =`
-    <!DOCTYPE html>
-    <html>
-    <head>
-    <meta charset="utf-8">
-    <title>getCurrentPosition()로 현재 위치 파악</title>
-    </head>
-    <body>
-    <h3>getCurrentPosition()로 현재 위치 파악</h3>
-    <hr>
-    <div id="msg">이곳에 위치 정보 출력</div>
-    <script>
-    if(navigator.geolocation)
-        navigator.geolocation.getCurrentPosition(success); 
-    else
-        alert("지원하지 않음");
-   
-    function success(position) {
-        let lat = position.coords.latitude; // 위도
-        let lon = position.coords.longitude; // 경도
-        let acc = position.coords.accuracy; // 정확도
-
-        lat = lat.toPrecision(6); lon = lon.toPrecision(6);
-        let now = new Date(position.timestamp);
-        let text = "현재 시간 " + now.toUTCString() + "<br>";
-        text += "현재 위치 (위도 " + lat + "°, 경도 " + lon + "°)<br>";
-        text += "정확도 " + acc + "m<br>";
-        document.getElementById("msg").innerHTML = text;
-    }
-    </script>
-    </body>
-    </html>
-    `;
-    res.end(template);
-}
-
-function show_map(result, res) {
-    res.writeHead(200);
-    var template =`
-    <!DOCTYPE html>
-    <html>
-    <head>
-    <meta charset="utf-8">
-    <title>현재 위치와 지도 출력</title>
-    </head>
-    <body>
-    <h3>현재 위치와 지도 출력</h3>
-    <hr>
-    <div id="msg">이곳에 위치 정보 출력</div>
-    <iframe id="map" width="425" height="350" frameborder="0" scrolling="no" marginheight="0"
-    marginwidth="0" ></iframe><br/>
-    <a id="bigmaplink" target="_blank">새 창에 큰 지도 보기</a>
-    <script>
-    if(navigator.geolocation)
-    navigator.geolocation.getCurrentPosition(success);
-    else
-    alert("지원하지 않음");
-    function success(position) {
-        let lat = position.coords.latitude; 
-        let lon = position.coords.longitude; 
-        let acc = position.coords.accuracy; 
-        
-        lat = lat.toPrecision(6); lon = lon.toPrecision(6);
-        let now = new Date(position.timestamp);
-        let text = "현재 시간 " + now.toUTCString() + "<br>";
-        text += "현재 위치 (위도 " + lat + "°, 경도 " + lon + "°)<br>";
-        text += "정확도 " + acc + "m<br>";
-        document.getElementById("msg").innerHTML = text;
-        let map = document.getElementById("map");
-        map.src ="https://www.openstreetmap.org/export/embed.html?bbox=" +
-        (parseFloat(lon)-0.01) + "%2C" + (parseFloat(lat)-0.01) + "%2C" +
-        (parseFloat(lon)+0.01) + "%2C" + (parseFloat(lat) + 0.01);
-        
-        let maplink = document.getElementById("bigmaplink");
-        let zoom = 15; 
-        maplink.href = "https://www.openstreetmap.org/#map=" + zoom + "/" + lat + "/" + lon;
+// carwash_delete
+app.post('/carwash_delete', function (req, res, next) {
+    var company = req.body.company;
+    var del = Carwash.find({ 'company': company })
+    del.deleteOne(function (err) {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({
+              ok: false,
+              db: "mongoose",
+              service: "carwash_delete error",
+              error: err
+        })
         }
-        </script>
-        </body>
-        </html>
-        `;
-        res.end(template);
-}
+        res.status(200).json({ ok: true, company: company + " removed" });
+    })
+})
 
 module.exports = app;
