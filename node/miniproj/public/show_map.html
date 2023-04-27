@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Current Location</title>
+</head>
+
+<body>
+<h3>현재 위치와 지도 출력</h3>
+    <div id="msg">이곳에 위치 정보 출력</div>
+    <iframe id="map" width="425" height="350" frameborder="0" scrolling="no" marginheight="0"
+    marginwidth="0" ></iframe><br/>
+    <a id="bigmaplink" target="_blank">새 창에 큰 지도 보기</a>
+    <script>
+      function showPosition(position) {
+        var lat = position.coords.latitude;
+        var lon = position.coords.longitude;
+        var coords = lat + ', ' + lon;
+        document.getElementById('location').innerHTML = coords;
+      }
+      
+      function getLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+          document.getElementById('location').innerHTML = 'Geolocation is not supported by this browser.';
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <button onclick="getLocation()">Get Location</button>
+    <p id="location"></p>
+  </body>
+</html>
