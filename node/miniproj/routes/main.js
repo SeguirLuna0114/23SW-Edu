@@ -48,10 +48,26 @@ app.get('/carwash_list', function (req, res, next) {
     })
 })
 
+//carwash_get_type
+app.get('/carwash_get_type', function (req, res, next) {
+  var type = req.query.type;
+  Carwash.find({ 'type': { $regex: type, $options: 'i' } }, { '_id': 0 }, function (err, docs) {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ ok: false, db: "mongoose", service: "carwash_get_type", error: err });
+    }
+    if (!docs) { // handle null value of carwash
+      return res.status(404).json({ ok: false, db: "mongoose", service: "carwash_get_type", message: "No carwash found" });
+    }
+    res.status(200).json({ ok: true, carwash: docs });
+  })
+})
+
+
 //carwash_get_state
 app.get('/carwash_get_state', function (req, res, next) {
     var state = req.query.state;
-    Carwash.findOne({ 'state': state }, { '_id': 0 }, function (err, docs) {
+    Carwash.find({ 'state': state }, { '_id': 0 }, function (err, docs) {
       if (err) {
         console.error(err);
         return res.status(500).json({ ok: false, db: "mongoose", service: "carwash_get_state", error: err });
@@ -67,7 +83,7 @@ app.get('/carwash_get_state', function (req, res, next) {
 app.get('/carwash_get_state&type', function (req, res, next) {
     var state = req.query.state;
     var type = req.query.type;
-    Carwash.findOne({ 'state': state, 'type': type }, function (err, docs) {
+    Carwash.find({ 'state': state, 'type': type }, function (err, docs) {
       if (err) {
         console.error(err);
         return res.status(500).json({ ok: false, db: "mongoose", service: "carwash_get_state & type", error: err });
@@ -94,7 +110,7 @@ app.post('/carwash_insert', function (req, res, next) {
     var lapti = req.body.lapti;
     var longit = req.body.longit;
     var address = req.body.address;
-  
+
     var carwash = new Carwash({
       'company': company,
       'state': state,
