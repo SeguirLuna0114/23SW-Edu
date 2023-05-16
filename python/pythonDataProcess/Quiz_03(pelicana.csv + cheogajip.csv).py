@@ -35,13 +35,15 @@ print(btable) #<-type: 데이터프레임(pandas.core.frame.DataFrame)
 # [1050 rows x 6 columns]
 print('-' * 50)
 
+#.append(): 두개의 table(데이터프레임)을 "순차적으로" 리스트(mylist)에 추가
+# -> pd.contact함수가 list를 인자로 받아 이를 연결(concatenate)하여 새로운 테이블(데이터프레임)을 생성
 mylist = []
-mylist.append(atable)
-mylist.append(btable)
+mylist.append(atable) #atable을 mylist에 추가
+mylist.append(btable) #btable을 mylist에 추가
 result = pd.concat(objs=mylist, axis=0, ignore_index=True)
-# pd.concat() 함수: 두 데이터프레임을 수직(axis=0)으로 결합
+# pd.concat() 함수: 두 데이터프레임(table)을 수직/세로(axis=0)으로 결합
 # objs: 리스트로 전달된 데이터프레임들을 결합
-# ignore_index=True: 결합된 데이터프레임의 인덱스를 재설정
+# ignore_index=True: 결합된 데이터프레임의 인덱스를 재설정(reindex하라는 의미)
 print(result) #<-type: 데이터프레임(pandas.core.frame.DataFrame)
 #           brand  ...         phone
 # 0     cheogajip  ...  031-582-7114
