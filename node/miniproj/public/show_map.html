@@ -16,6 +16,9 @@
         var lat = position.coords.latitude;
         var lon = position.coords.longitude;
         var coords = lat + ', ' + lon;
+        lat = lat.toPrecision(6); lon = lon.toPrecision(6);
+        //위도와 경도의 소수점아래 6자리로 정의
+
         document.getElementById('location').innerHTML = coords;
       }
       
