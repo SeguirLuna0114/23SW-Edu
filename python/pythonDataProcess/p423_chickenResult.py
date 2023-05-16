@@ -6,7 +6,7 @@ plt.rcParams['font.family'] = 'Malgun Gothic'
 chickenfile = 'chicken.csv'
 
 colnames = ['지역', '브랜드', '매장수']
-myframe = pd.read_csv(chickenfile, names=colnames, header=None)
+myframe = pd.read_csv(chickenfile, names=colnames, header=None) # header=None: pandas가 첫번째 행을 데이터로 처리하고 열 이름을 자동으로 할당하지 않도록 함 => 첫번째 행도 데이터로 포함되어 처리됨 ->이후에 사용자가 직접 열 이름을 지정하거나 열 이름 추가가 가능해짐
 print(myframe)
 #    지역   브랜드  매장수
 # 0  서울  페리카나   10
