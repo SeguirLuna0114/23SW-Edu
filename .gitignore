@@ -28,7 +28,7 @@ node/config/pool.js
 ## python
 python/**/.venv
 python/**/__pycache__/
-python/**/.idea
+python/**/.idea/
 python/secret.json
 
 ## mongodb
