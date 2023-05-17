@@ -1,7 +1,8 @@
 import cx_Oracle
 
 #Oracle 클라이언트를 초기화
-cx_Oracle.init_oracle_client(lib_dir="/OracleXE/instantclient_19_18")
+#cx_Oracle.init_oracle_client(lib_dir="/OracleXE/instantclient_19_18")
+cx_Oracle.init_oracle_client(lib_dir="/usr/local/OracleXE/instantclient_19_19")
 #lib_dir 매개변수: Oracle 클라이언트 라이브러리의 경로를 지정
 
 #Oracle 데이터베이스에 접속하고 데이터베이스 작업을 수행하기 위한 연결 객체와 커서 객체
