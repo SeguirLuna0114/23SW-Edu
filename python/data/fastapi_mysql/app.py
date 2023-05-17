@@ -1,16 +1,16 @@
-from fastapi import FastAPI #FastAPI와 MongoDB를 사용하여 API를 구현
+from fastapi import FastAPI 
 from pydantic import BaseModel
 from database import db_conn
 from models import St_info, St_grade
 
-app = FastAPI() #FastAPI 애플리케이션을 생성
+app = FastAPI()
 
 db = db_conn()
 session = db.sessionmaker()
 
 class Item(BaseModel):
-    name : str
-    number : int
+    name : str 
+    number : int 
 
 @app.get('/')
 async def healthCheck():
@@ -23,12 +23,12 @@ async def select_st_info():
 
 @app.get('/stgrade')
 async def select_st_grade():
-    result = session.query(St_grade)
-    return result.all()
+    result = session.query(St_grade).all()
+    return result
 
 @app.get('/getuser')
 async def getuser(id=None, name=None):
-    if (id and name) is None:
+    if (id is None) and (name is None):
         return "학번 또는 이름으로 검색하세요."
     else:
         if name is None:
@@ -36,7 +36,7 @@ async def getuser(id=None, name=None):
         elif id is None:
             result = session.query(St_info).filter(St_info.NAME == name).all()
         else:
-            result == session.query(St_info).filter(St_info.ST_ID == id, St_info.NAME == name).all()
+            result = session.query(St_info).filter(St_info.ST_ID == id, St_info.NAME == name).all()
         return result
 
 @app.get('/useradd')
