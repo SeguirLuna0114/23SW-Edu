@@ -23,17 +23,20 @@ USERNAME = get_secret("Mysql_Username")
 PASSWORD = get_secret("Mysql_Password")
 DBNAME = get_secret("Mysql_DBname")
 
-DB_URL = f'mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DBNAME}'
+DB_URL = f'mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DBNAME}' # 데이터베이스 연결 정보를 담고 있는 URL 정의
 
+#db_conn 클래스: 데이터베이스 연결 및 세션 관리를 용이하게 해주는 기능을 제공
 class db_conn:
-    def __init__(self):
+    def __init__(self): #클래스의 인스턴스가 생성될 때 호출되는 생성자 메서드
+        #create_engine 함수를 사용하여 데이터베이스 연결 엔진을 생성
         self.engine = create_engine(DB_URL, pool_recycle=500)
+        #pool_recycle=500: 데이터베이스 연결 풀 내의 연결을 재사용하기 전에 최대한으로 유지하는 시간(초)을 설정
     
-    def sessionmaker(self):
-        Session = sessionmaker(bind=self.engine)
-        session = Session()
+    def sessionmaker(self): #sessionmaker 함수를 사용하여 세션을 생성하고 반환
+        Session = sessionmaker(bind=self.engine) #bind=self.engine을 통해 session과 데이터베이스 연결 엔진을 바인딩
+        session = Session() #session: 데이터베이스와의 상호작용을 담당하는 객체
         return session
     
-    def connection(self):
-        conn = self.engine.connection()
+    def connection(self): #직접 데이터베이스 연결 객체를 얻을 수 있음
+        conn = self.engine.connection() #self.engine.connection()을 호출하여 데이터베이스 연결 객체를 생성
         return conn
