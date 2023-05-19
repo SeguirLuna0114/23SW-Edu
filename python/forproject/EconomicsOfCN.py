@@ -1,4 +1,4 @@
-#외교부_국가 지역별 경제현황
+#country_nm: '중국'
 import json, urllib.request, datetime, math
 import os.path
 
@@ -48,8 +48,10 @@ def getEconomicServData(numOfRows, pageNo):
     parameters += '?serviceKey=' + get_secret("data_apiKey")  # serviceKey는 비밀키를 설정
     parameters += '&numOfRows=' + str(numOfRows)  # 한 페이지 당 결과 개수
     parameters += '&pageNo=' + str(pageNo)  # 페이지 번호
-    #parameters += '&cond[country_nm::EQ]=' + urllib.parser.quote(country_nm)  # 한글국가명
-    #parameters += '&cond[country_iso_alp2::EQ]=' + str(country_iso_alp2)  # ISO 2자리코드
+    parameters += '&cond[country_nm::EQ]=%EC%A4%91%EA%B5%AD'
+    #urllib.parser.quote(country_nm)  # 한글국가명
+    parameters += '&cond[country_iso_alp2::EQ]=CN'
+    #+ str(country_iso_alp2)  # ISO 2자리코드
 
     #중국 : &cond[country_nm::EQ]=%EC%A4%91%EA%B5%AD&cond[country_iso_alp2::EQ]=CN
 
@@ -69,10 +71,9 @@ def getEconomicServData(numOfRows, pageNo):
 numOfRows = 100
 pageNo = 1
 
-#jsonData = getEconomicServData(numOfRows, pageNo)
-#print(jsonData)
+jsonData = getEconomicServData(numOfRows, pageNo)
+print(jsonData)
 
-#빈 리스트 jsonResult를 생성합니다. 이 리스트는 모든 결과를 저장
 jsonResult = []
 nPage = 0
 while(True):
@@ -100,16 +101,17 @@ while(True):
     else:  # 위의 조건들을 만족하지 않을 경우, 루프를 종료
         break
 
-    # jsonResult에 저장된 데이터를 JSON 형식으로 변환하여 파일에 저장
+
+# jsonResult에 저장된 데이터를 JSON 형식으로 변환하여 파일에 저장
     # with 문을 사용 => 파일을 열고 사용한 후에 자동으로 닫히도록 보장
-    savedFilename = 'xx_OverviewEconomicService.json'  # 저장할 파일 명 설정
-    with open(savedFilename, 'w', encoding='utf-8') as outfile:  # 파일을 쓰기 모드로 열기
-        retJson = json.dumps(jsonResult, indent=4, sort_keys=True, ensure_ascii=False)  # jsonResult 리스트를 JSON 형식으로 변환
+savedFilename = 'xx_GetChinaEconomics.json'  # 저장할 파일 명 설정
+with open(savedFilename, 'w', encoding='utf-8') as outfile:  # 파일을 쓰기 모드로 열기
+    retJson = json.dumps(jsonResult, indent=4, sort_keys=True, ensure_ascii=False)  # jsonResult 리스트를 JSON 형식으로 변환
         # json.dumps() 함수를 사용하여 jsonResult를 JSON 문자열로 변환
         # indent 매개변수: 들여쓰기 칸 수 설정
         # sort_keys=True: 키를 기준으로 정렬
         # ensure_ascii=False: 유니코드 문자를 그대로 유지
 
-        outfile.write(retJson)  # JSON 데이터를 파일에 쓰기
+    outfile.write(retJson)  # JSON 데이터를 파일에 쓰기
 
 print(savedFilename + ' file saved..')

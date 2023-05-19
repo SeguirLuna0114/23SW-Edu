@@ -1,0 +1,22 @@
+[
+    {
+        "country_eng_nm": "China",
+        "country_iso_alp2": "CN",
+        "country_nm": "중국",
+        "currency_unit": "元(1$ = 약 6.9646元, '22.12. 인민은행)",
+        "export_amount": null,
+        "gdp": "18032100000000",
+        "gdp_desc": "(IMF)",
+        "gdp_growth_rate": "3.0",
+        "gdp_growth_rate_desc": "(국가통계국)",
+        "gdp_per_capita": "12970",
+        "gdp_per_capita_desc": "(IMF)",
+        "import_amount": null,
+        "inflation_rate": "3.0",
+        "inflation_rate_desc": null,
+        "main_resource": null,
+        "major_industry": "1차 7.3%, 2차 39.9%, 3차 52.8%(국가통계국)",
+        "unemployment_desc": null,
+        "unemployment_rate": "5.5"
+    }
+]
