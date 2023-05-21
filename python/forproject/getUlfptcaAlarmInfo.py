@@ -40,6 +40,10 @@ def getRequestUrl(url):  # 주어진 URL에 HTTP 요청을 보내고, 성공적�
 #공공데이터포털에서 '한국환경공단_에어코리아_미세먼지 경보 발령 현황'데이터를 가져와 JSON 형식으로 저장
 def getUlfptcaAlarmInfo(numOfRows, pageNo, year):
     # pageNo와 numOfRows, year을 매개변수로 받음
+
+    if year is None or year < 2018 or year > 2023:
+        return "입력한 연도 관련 데이터가 존재하지 않습니다."
+
     end_point = 'https://apis.data.go.kr/B552584/UlfptcaAlarmInqireSvc/getUlfptcaAlarmInfo'
 
     #https://apis.data.go.kr/B552584/UlfptcaAlarmInqireSvc/getUlfptcaAlarmInfo
@@ -74,15 +78,7 @@ def getUlfptcaAlarmInfo(numOfRows, pageNo, year):
 #파라미터의 값 설정
 pageNo = 1
 numOfRows = 100
-
-#year 입력변수 정의
 year = int(input('측정연도를 입력하세요(ex.YYYY) : '))
-if year is None: #입력된 측정연도가 없는 경우
-    return "측정 연도를 입력하세요"
-elif (year >= 2018 and year <= 2023):
-    return year
-else: #입력된 측정연도가 2018~2023 이외의 범위에 있는 경우
-    return "입력한 연도 관련 데이터가 존재하지 않습니다."
 
 #jsonData = getUlfptcaAlarmInfo(numOfRows, pageNo, year)
 #print(jsonData)
@@ -91,7 +87,7 @@ else: #입력된 측정연도가 2018~2023 이외의 범위에 있는 경우
 jsonResult = []
 nPage = 0
 while(True):
-    print('pageNo : %d, nPage : %d, year : %d' % (pageNo, nPage, year))  # 현재 페이지 번호와 총 페이지 개수를 출력
+    print('pageNo : %d, nPage : %d' % (pageNo, nPage))  # 현재 페이지 번호와 총 페이지 개수를 출력
     jsonData = getUlfptcaAlarmInfo(numOfRows, pageNo, year)
     print(jsonData)
 
