@@ -41,8 +41,8 @@ def getRequestUrl(url):  # 주어진 URL에 HTTP 요청을 보내고, 성공적�
 def getUlfptcaAlarmInfo(numOfRows, pageNo, year):
     # pageNo와 numOfRows, year을 매개변수로 받음
 
-    if year is None or year < 2018 or year > 2023:
-        return "입력한 연도 관련 데이터가 존재하지 않습니다."
+    #if year is None or year < 2018 or year > 2023:
+        #return "입력한 연도 관련 데이터가 존재하지 않습니다."
 
     end_point = 'https://apis.data.go.kr/B552584/UlfptcaAlarmInqireSvc/getUlfptcaAlarmInfo'
 
@@ -78,7 +78,7 @@ def getUlfptcaAlarmInfo(numOfRows, pageNo, year):
 #파라미터의 값 설정
 pageNo = 1
 numOfRows = 100
-year = int(input('측정연도를 입력하세요(ex.YYYY) : '))
+year = input('측정연도를 입력하세요(ex.YYYY or all) : ')
 
 #jsonData = getUlfptcaAlarmInfo(numOfRows, pageNo, year)
 #print(jsonData)
@@ -88,15 +88,25 @@ jsonResult = []
 nPage = 0
 while(True):
     print('pageNo : %d, nPage : %d' % (pageNo, nPage))  # 현재 페이지 번호와 총 페이지 개수를 출력
-    jsonData = getUlfptcaAlarmInfo(numOfRows, pageNo, year)
-    print(jsonData)
+    if year == 'all':
+        for yeardata in range(2018, 2024):
+            jsonData = getUlfptcaAlarmInfo(numOfRows, pageNo, str(yeardata))
+
+            print(jsonData)
+
+            savedFilename = 'xx_All_UlfptcaAlarmInfo.json'  # 저장할 파일 명 설정
+    else: #단일연도
+        year = int(year)
+        jsonData = getUlfptcaAlarmInfo(numOfRows, pageNo, year)
+        print(jsonData)
+        savedFilename = 'xx{}_UlfptcaAlarmInfo.json'.format(year)  # 저장할 파일 명 설정
 
     if (jsonData['response']['header']['resultCode'] == '00'):
         totalCount = jsonData['response']['body']['totalCount']
         print('데이터 총 개수 : ', totalCount)
 
         for item in jsonData['response']['body']['items']:
-            jsonResult.append(item)  #가져온 데이터를 jsonResult 리스트에 추가
+            jsonResult.append(item)  # 가져온 데이터를 jsonResult 리스트에 추가
 
         if totalCount == 0:  # 데이터의 총 개수가 0인 경우(데이터가 더이상 없는 경우), 루프를 종료
             break
@@ -111,7 +121,7 @@ while(True):
     else:  # 위의 조건들을 만족하지 않을 경우, 루프를 종료
         break
 
-    savedFilename = 'xx2022_UlfptcaAlarmInfo.json'  # 저장할 파일 명 설정
+    #savedFilename = 'xx_All_UlfptcaAlarmInfo.json'  # 저장할 파일 명 설정
 
     # jsonResult에 저장된 데이터를 JSON 형식으로 변환하여 파일에 저장
     # with 문을 사용 => 파일을 열고 사용한 후에 자동으로 닫히도록 보장
