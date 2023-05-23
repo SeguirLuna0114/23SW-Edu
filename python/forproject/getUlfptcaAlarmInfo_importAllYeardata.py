@@ -89,12 +89,16 @@ nPage = 0
 while(True):
     print('pageNo : %d, nPage : %d' % (pageNo, nPage))  # 현재 페이지 번호와 총 페이지 개수를 출력
     if year == 'all':
-        for yeardata in range(2018, 2024):
-            jsonData = getUlfptcaAlarmInfo(numOfRows, pageNo, str(yeardata))
+        #for yeardata in range(2018, 2024):
+            jsonData2018 = getUlfptcaAlarmInfo(numOfRows, pageNo, 2018)
+            jsonData2019 = getUlfptcaAlarmInfo(numOfRows, pageNo, 2019)
+            jsonData2020 = getUlfptcaAlarmInfo(numOfRows, pageNo, 2020)
+            jsonData2021 = getUlfptcaAlarmInfo(numOfRows, pageNo, 2021)
+            jsonData2022 = getUlfptcaAlarmInfo(numOfRows, pageNo, 2022)
+            jsonData2023 = getUlfptcaAlarmInfo(numOfRows, pageNo, 2023)
+            merged_yearData = jsonData2018 + jsonData2019 + jsonData2020 + jsonData2021 + jsonData2022 + jsonData2023
+            savedFilename = 'xxAll_UlfptcaAlarmInfo.json'
 
-            print(jsonData)
-
-            savedFilename = 'xx_All_UlfptcaAlarmInfo.json'  # 저장할 파일 명 설정
     else: #단일연도
         year = int(year)
         jsonData = getUlfptcaAlarmInfo(numOfRows, pageNo, year)
