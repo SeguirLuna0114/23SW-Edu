@@ -75,6 +75,16 @@ def getUlfptcaAlarmInfo(numOfRows, pageNo, year):
     else:  # 응답이 None이 아닌 경우
         return json.loads(result)  # 응답을 JSON 형식으로 변환하여 반환
 
+def merge_json_files(json_files, output_file):
+    merged_data = []
+    for file in json_files:
+        with open(file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            merged_data.extend(data)
+    with open(output_file, 'w', encoding='utf-8') as outfile:
+        json.dump(merged_data, outfile, indent=4, ensure_ascii=False)
+    print(output_file + ' file saved..')
+
 #파라미터의 값 설정
 pageNo = 1
 numOfRows = 100
@@ -86,46 +96,43 @@ year = input('측정연도를 입력하세요(ex.YYYY or all) : ')
 #빈 리스트 jsonResult를 생성합니다. 이 리스트는 모든 결과를 저장
 jsonResult = []
 nPage = 0
-while(True):
-    print('pageNo : %d, nPage : %d' % (pageNo, nPage))  # 현재 페이지 번호와 총 페이지 개수를 출력
-    if year == 'all':
-        #for yeardata in range(2018, 2024):
-            jsonData2018 = getUlfptcaAlarmInfo(numOfRows, pageNo, 2018)
-            jsonData2019 = getUlfptcaAlarmInfo(numOfRows, pageNo, 2019)
-            jsonData2020 = getUlfptcaAlarmInfo(numOfRows, pageNo, 2020)
-            jsonData2021 = getUlfptcaAlarmInfo(numOfRows, pageNo, 2021)
-            jsonData2022 = getUlfptcaAlarmInfo(numOfRows, pageNo, 2022)
-            jsonData2023 = getUlfptcaAlarmInfo(numOfRows, pageNo, 2023)
-            merged_yearData = jsonData2018 + jsonData2019 + jsonData2020 + jsonData2021 + jsonData2022 + jsonData2023
-            savedFilename = 'xxAll_UlfptcaAlarmInfo.json'
 
-    else: #단일연도
-        year = int(year)
+if year.lower() == "all":
+    json_files_to_merge = []
+    for y in range(2018, 2024):
+        savedFilename = f'xx{y}_UlfptcaAlarmInfo.json'
+        json_files_to_merge.append(savedFilename)
+    output_filename = 'XXXAll_UlfptcaAlarmInfo.json'
+    merge_json_files(json_files_to_merge, output_filename)
+else:
+    while(True):
+        print('pageNo : %d, nPage : %d' % (pageNo, nPage))  # 현재 페이지 번호와 총 페이지 개수를 출력
         jsonData = getUlfptcaAlarmInfo(numOfRows, pageNo, year)
         print(jsonData)
-        savedFilename = 'xx{}_UlfptcaAlarmInfo.json'.format(year)  # 저장할 파일 명 설정
+        print('type : ', type(jsonData))
+        savedFilename = 'XXX{}_UlfptcaAlarmInfo.json'.format(year)  # 저장할 파일 명 설정
 
-    if (jsonData['response']['header']['resultCode'] == '00'):
-        totalCount = jsonData['response']['body']['totalCount']
-        print('데이터 총 개수 : ', totalCount)
+        if (jsonData['response']['header']['resultCode'] == '00'):
+            totalCount = jsonData['response']['body']['totalCount']
+            print('데이터 총 개수 : ', totalCount)
 
-        for item in jsonData['response']['body']['items']:
-            jsonResult.append(item)  # 가져온 데이터를 jsonResult 리스트에 추가
+            for item in jsonData['response']['body']['items']:
+                jsonResult.append(item)  # 가져온 데이터를 jsonResult 리스트에 추가
 
-        if totalCount == 0:  # 데이터의 총 개수가 0인 경우(데이터가 더이상 없는 경우), 루프를 종료
+            if totalCount == 0:  # 데이터의 총 개수가 0인 경우(데이터가 더이상 없는 경우), 루프를 종료
+                break
+
+            # 총 페이지 개수 계산
+            nPage = math.ceil(totalCount / numOfRows)  # 한 페이지당 결과 개수인 numOfRows로 나눈 뒤, 올림
+
+            if (pageNo == nPage):  # 만약 현재 페이지 번호가 총 페이지 개수와 같다면, 루프를 종료
+                break
+            pageNo += 1  # 현재 페이지 번호인 pageNo를 1 증가
+
+        else:  # 위의 조건들을 만족하지 않을 경우, 루프를 종료
             break
 
-        # 총 페이지 개수 계산
-        nPage = math.ceil(totalCount / numOfRows)  # 한 페이지당 결과 개수인 numOfRows로 나눈 뒤, 올림
-
-        if (pageNo == nPage):  # 만약 현재 페이지 번호가 총 페이지 개수와 같다면, 루프를 종료
-            break
-        pageNo += 1  # 현재 페이지 번호인 pageNo를 1 증가
-
-    else:  # 위의 조건들을 만족하지 않을 경우, 루프를 종료
-        break
-
-    #savedFilename = 'xx_All_UlfptcaAlarmInfo.json'  # 저장할 파일 명 설정
+        #savedFilename = 'xx_All_UlfptcaAlarmInfo.json'  # 저장할 파일 명 설정
 
     # jsonResult에 저장된 데이터를 JSON 형식으로 변환하여 파일에 저장
     # with 문을 사용 => 파일을 열고 사용한 후에 자동으로 닫히도록 보장

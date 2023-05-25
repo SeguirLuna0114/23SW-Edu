@@ -34,7 +34,7 @@ async def getMongo():
 @app.get('/getissueDate')
 async def getissueDate(issueDate: str = None):
     if issueDate is None:
-        return "조회하려는 미세먼지 경보 발령 날짜를 입력하세요.(ex. YYYY-MM-DD)"
+        return "조회하려는 미세먼지 경보 발령 날짜를 입력하세요.(ex. YYYY-MM-DD)"#달별로
     else:
         result = list(mycol.find({"issueDate":str(issueDate)}))
         if result: #issueDate가 존재하는지 여부
