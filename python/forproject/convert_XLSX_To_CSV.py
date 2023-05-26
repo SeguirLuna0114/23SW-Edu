@@ -24,7 +24,8 @@ with open(csv_file, 'r', newline='', encoding='utf-8') as file, open(temp_filena
     # 첫 번째 행과 두 번째 행을 건너뛰고 나머지 행을 임시 파일에 복사합니다
     for i, row in enumerate(reader):
         if i > 1:  # 첫 번째 행과 두 번째 행을 건너뜁니다
-            writer.writerow(row)
+            if len(row) > 6:
+                writer.writerow(row[:1] + row[7:])
 
 # 원본 파일을 삭제하고 임시 파일을 원본 파일명으로 변경합니다
 os.remove(csv_file)
