@@ -188,8 +188,16 @@ async def getUlfptcaAlarmInfo(year: str = None):
     mycol.insert_many(data_dict)
     return data_dict
 
-@app.get('/dropCollection')
-def drop_Collection():
-    mycol.drop()
+@app.get('/getMongoCollectionData')
+async def getMongoCollectionData(collectionName: str = None)
+    get_mycol = mydb[collectionName] # 컬렉션을 선택
+    return list(get_mycol.find().limit(10))
+
+@app.get('/dropMongoCollectionData')
+def dropMongoCollectionData(collectionName: str = None):
+    drop_mycol = mydb[collectionName] #drop 컬렉션 선택
+    drop_mycol.drop()
     return 'Drop selected collection...'
+
+
 
