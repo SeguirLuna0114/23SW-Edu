@@ -194,7 +194,7 @@ async def getMongoCollectionData(collectionName: str = None)
     return list(get_mycol.find().limit(10))
 
 @app.get('/dropMongoCollectionData')
-def dropMongoCollectionData(collectionName: str = None):
+async def dropMongoCollectionData(collectionName: str = None):
     drop_mycol = mydb[collectionName] #drop 컬렉션 선택
     drop_mycol.drop()
     return 'Drop selected collection...'
