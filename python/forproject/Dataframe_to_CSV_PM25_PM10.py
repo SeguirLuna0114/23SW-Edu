@@ -108,3 +108,44 @@ for year in range(2019, 2023):
 
     df_year_PM10.to_csv(f'df_{year}_PM10.csv', index=True, encoding='utf-8')
     print(f'df_{year}_PM10.csv saved....')
+
+#연도가 2018인 경우
+#print(selected_df['issueDate']).unique()
+months = [1, 2, 3, 4, 5]
+df_2023_PM25 = []
+df_2023_PM10 = []
+
+for month in months:
+    #print('\n df_2023_pm25')
+    df_2023_month_PM25 = df_PM25[df_PM25['issueDate'].str.contains(f'2023-{month:02d}')]
+    issueVal_2023_month_PM25 = df_2023_month_PM25.describe().round()
+    #print(f'#issueVal_2023_{month}_PM25')
+    #print(issueVal_2023_month_PM25)
+    df_2023_PM25.append(issueVal_2023_month_PM25)
+    #print('-' * 40)
+
+    #print('\n df_2023_pm10')
+    df_2023_month_PM10 = df_PM10[df_PM10['issueDate'].str.contains(f'2023-{month:02d}')]
+    issueVal_2023_month_PM10 = df_2023_month_PM10.describe().round()
+    #print(f'#issueVal_2023_{month}_PM25')
+    #print(issueVal_2023_month_PM10)
+    df_2023_PM10.append(issueVal_2023_month_PM10)
+    #print('-' * 40)
+
+df_2023_PM25 = pd.concat(df_2023_PM25, axis=1)
+df_2023_PM25.columns = [f'2023-{month:02d}' for month in months]
+df_2023_PM25.index.name = '2023_PM25'
+print(df_2023_PM25)
+print('-' * 40)
+
+df_2023_PM10 = pd.concat(df_2023_PM10, axis=1)
+df_2023_PM10.columns = [f'2023-{month:02d}' for month in months]
+df_2023_PM10.index.name = '2023_PM10'
+print(df_2023_PM10)
+
+#생성한 데이터프레임을 csv파일로 저장
+df_2023_PM25.to_csv('df_2023_PM25.csv', index=True, encoding='utf-8')
+print('df_2023_PM25.csv saved....')
+
+df_2023_PM10.to_csv('df_2023_PM10.csv', index=True, encoding='utf-8')
+print('df_2023_PM10.csv saved....')
