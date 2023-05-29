@@ -66,6 +66,45 @@ print('df_2018_PM25.csv saved....')
 df_2018_PM10.to_csv('df_2018_PM10.csv', index=True, encoding='utf-8')
 print('df_2018_PM10.csv saved....')
 
-#totalframe = totalframe.set_index('itemCode')
-#totalframe.index.name = '미세먼지 항목'
-#print(totalframe)
+#연도가 2019~2022인 경우
+data_year = {}
+for year in range(2019, 2023):
+    months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    data_year[f'df_{year}_PM25'] = []
+    data_year[f'df_{year}_PM10'] = []
+
+    for month in months:
+        # print('\n df_2018_pm25')
+        df_year_month_PM25 = df_PM25[df_PM25['issueDate'].str.contains(f'{year}-{month:02d}')]
+        issueVal_year_month_PM25 = df_year_month_PM25.describe().round()
+        # print(f'#issueVal_{year}_{month}_PM25')
+        # print(issueVal_year_month_PM25)
+        data_year[f'df_{year}_PM25'].append(issueVal_year_month_PM25)
+        # print('-' * 40)
+
+        # print('\n df_2018_pm10')
+        df_year_month_PM10 = df_PM10[df_PM10['issueDate'].str.contains(f'{year}-{month:02d}')]
+        issueVal_year_month_PM10 = df_year_month_PM10.describe().round()
+        # print(f'#issueVal_{year}_{month}_PM10')
+        # print(issueVal_year_month_PM10)
+        data_year[f'df_{year}_PM10'].append(issueVal_year_month_PM10)
+        # print('-' * 40)
+
+    df_year_PM25 = pd.concat(data_year[f'df_{year}_PM25'], axis=1)
+    df_year_PM25.columns = [f'{year}-{month:02d}' for month in months]
+    df_year_PM25.index.name = f'{year}_PM25'
+    print(df_year_PM25)
+    print('-' * 40)
+
+    df_year_PM10 = pd.concat(data_year[f'df_{year}_PM10'], axis=1)
+    df_year_PM10.columns = [f'{year}-{month:02d}' for month in months]
+    df_year_PM10.index.name = f'{year}_PM10'
+    print(df_year_PM10)
+    print('-' * 40)
+
+    # 생성한 데이터프레임을 csv파일로 저장
+    df_year_PM25.to_csv(f'df_{year}_PM25.csv', index=True, encoding='utf-8')
+    print(f'df_{year}_PM25.csv saved....')
+
+    df_year_PM10.to_csv(f'df_{year}_PM10.csv', index=True, encoding='utf-8')
+    print(f'df_{year}_PM10.csv saved....')
