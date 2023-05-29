@@ -76,6 +76,10 @@ print('-'*50)
 print(totalframe_2018.index.name)
 print('-'*50)
 
+df_2018_Trans = pd.concat([df_2018_PM25.T, df_2018_PM10.T], keys=['df_2018_PM25', 'df_2018_PM10'])
+print(df_2018_Trans)
+print('-' * 50)
+
 #연도가 2019~2022인 경우
 data_year = {}
 for year in range(2019, 2023):
@@ -126,7 +130,11 @@ for year in range(2019, 2023):
     totalframe_year.to_csv(f'df_total_{year}.csv', index=True, encoding='utf-8')
     print(f'df_total_{year}.csv saved....')
     print('-' * 50)
-    print(totalframe_year.index.name)
+    #print(totalframe_year.index.name)
+    #print('-' * 50)
+
+    df_year_Trans = pd.concat([df_year_PM25.T, df_year_PM10.T], keys=[f'df_{year}_PM25', f'df_{year}_PM10'])
+    print(df_year_Trans)
     print('-' * 50)
 
 #연도가 2023인 경우
@@ -180,3 +188,7 @@ print('df_total_2023.csv saved....')
 print('-'*50)
 print(totalframe_2023.index.name)
 print('-'*50)
+
+df_2023_Trans = pd.concat([df_2023_PM25.T, df_2023_PM10.T], keys=['df_2023_PM25', 'df_2023_PM10'])
+print(df_2023_Trans)
+print('-' * 50)
