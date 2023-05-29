@@ -66,6 +66,16 @@ print('df_2018_PM25.csv saved....')
 df_2018_PM10.to_csv('df_2018_PM10.csv', index=True, encoding='utf-8')
 print('df_2018_PM10.csv saved....')
 
+#total
+totalframe_2018 = pd.concat([df_2018_PM25, df_2018_PM10], keys=['df_2018_PM25', 'df_2018_PM10'])
+totalframe_2018.index.name = '2018_totalData'
+print(totalframe_2018)
+totalframe_2018.to_csv('df_total_2018.csv', index=True, encoding='utf-8')
+print('df_total_2018.csv saved....')
+print('-'*50)
+print(totalframe_2018.index.name)
+print('-'*50)
+
 #연도가 2019~2022인 경우
 data_year = {}
 for year in range(2019, 2023):
@@ -109,7 +119,17 @@ for year in range(2019, 2023):
     df_year_PM10.to_csv(f'df_{year}_PM10.csv', index=True, encoding='utf-8')
     print(f'df_{year}_PM10.csv saved....')
 
-#연도가 2018인 경우
+    #total
+    totalframe_year = pd.concat([df_year_PM25, df_year_PM10], keys=[f'df_{year}_PM25', f'df_{year}_PM10'])
+    totalframe_year.index.name = f'{year}_totalData'
+    print(totalframe_year)
+    totalframe_year.to_csv(f'df_total_{year}.csv', index=True, encoding='utf-8')
+    print(f'df_total_{year}.csv saved....')
+    print('-' * 50)
+    print(totalframe_year.index.name)
+    print('-' * 50)
+
+#연도가 2023인 경우
 #print(selected_df['issueDate']).unique()
 months = [1, 2, 3, 4, 5]
 df_2023_PM25 = []
@@ -149,3 +169,14 @@ print('df_2023_PM25.csv saved....')
 
 df_2023_PM10.to_csv('df_2023_PM10.csv', index=True, encoding='utf-8')
 print('df_2023_PM10.csv saved....')
+print('-'*50)
+
+#makePlot
+totalframe_2023 = pd.concat([df_2023_PM25, df_2023_PM10], keys=['df_2023_PM25', 'df_2023_PM10'])
+totalframe_2023.index.name = '2023_totalData'
+print(totalframe_2023)
+totalframe_2023.to_csv('df_total_2023.csv', index=True, encoding='utf-8')
+print('df_total_2023.csv saved....')
+print('-'*50)
+print(totalframe_2023.index.name)
+print('-'*50)
