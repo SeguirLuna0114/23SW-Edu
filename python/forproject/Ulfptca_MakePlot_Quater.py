@@ -31,45 +31,53 @@ for city in citylist:
             df_YearPMdata = df_PMdata[df_PMdata['issueDate'].dt.year == year]
             months = df_YearPMdata['issueDate'].dt.month.unique()
 
-            for month in months:
-                quater = []
-                avg_quater = []
+            for month in months: # month변수의 값에 따라 분기값을 설정
+                #quater = []
+                #avg_quater = []
 
                 if month in range(1, 4):
-                    quater.append(f'{year}년도 1분기')
-                    df_MonthPMdata = df_YearPMdata[df_YearPMdata['issueDate'].dt.month.isin([1, 2, 3])]
-                    avg_issueVal_quater = np.round(df_MonthPMdata['issueVal'].mean(skipna=True))
-                    avg_quater.append(avg_issueVal_quater)
-                    # print(f'{year}년도 1분기 : {avg_issueVal_quater}')
-                    # print('-' * 50)
+                    #quater.append(f'{year}년도 1분기')
+                    quater = f'{year}년도 1분기'
+                    df_MonthPMdata = df_YearPMdata[df_YearPMdata['issueDate'].dt.month.isin([1, 2, 3])] # df_YearPMdata 데이터프레임에서 1,2,3월에 해당하는 데이터를 추출
+                    avg_issueVal_quater = np.round(df_MonthPMdata['issueVal'].mean(skipna=True)) # df_MonthPMdata 데이터프레임에서 issueVal열의 값들의 평균 계산
+                    #avg_quater.append(avg_issueVal_quater)
+                    result_data.append([city, PMdata, year, quater, avg_issueVal_quater])
+                    print(f'{year}년도 1분기 : {avg_issueVal_quater}')
+                    print('-' * 50)
                 elif month in range(4, 7):
-                    quater.append(f'{year}년도 2분기')
+                    #quater.append(f'{year}년도 2분기')
+                    quater = f'{year}년도 2분기'
                     df_MonthPMdata = df_YearPMdata[df_YearPMdata['issueDate'].dt.month.isin([4, 5, 6])]
                     avg_issueVal_quater = np.round(df_MonthPMdata['issueVal'].mean(skipna=True))
-                    avg_quater.append(avg_issueVal_quater)
-                    # print(f'{year}년도 2분기 : {avg_issueVal_quater}')
+                    result_data.append([city, PMdata, year, quater, avg_issueVal_quater])
+                    #avg_quater.append(avg_issueVal_quater)
+                    print(f'{year}년도 2분기 : {avg_issueVal_quater}')
                     # print('-' * 50)
                 elif month in range(7, 10):
-                    quater.append(f'{year}년도 3분기')
+                    #quater.append(f'{year}년도 3분기')
+                    quater = f'{year}년도 3분기'
                     df_MonthPMdata = df_YearPMdata[df_YearPMdata['issueDate'].dt.month.isin([7, 8, 9])]
                     avg_issueVal_quater = np.round(df_MonthPMdata['issueVal'].mean(skipna=True))
-                    avg_quater.append(avg_issueVal_quater)
-                    # print(f'{year}년도 3분기 : {avg_issueVal_quater}')
-                    # print('-' * 50)
+                    #avg_quater.append(avg_issueVal_quater)
+                    result_data.append([city, PMdata, year, quater, avg_issueVal_quater])
+                    print(f'{year}년도 3분기 : {avg_issueVal_quater}')
+                    print('-' * 50)
                 elif month in range(10, 13):
-                    quater.append(f'{year}년도 4분기')
+                    #quater.append(f'{year}년도 4분기')
+                    quater = f'{year}년도 4분기'
                     df_MonthPMdata = df_YearPMdata[df_YearPMdata['issueDate'].dt.month.isin([10, 11, 12])]
                     avg_issueVal_quater = np.round(df_MonthPMdata['issueVal'].mean(skipna=True))
-                    avg_quater.append(avg_issueVal_quater)
-                    #print(f'{year}년도 4분기 : {avg_issueVal_quater}')
-                    #print('-' * 50)
-                result_data.append([city, PMdata, year, quater, avg_quater])
-            #print(result_data)
-    Df_Result = pd.DataFrame(result_data, columns=['발령 지역 명', '미세먼지 항목 구분', '발령 연도', '분기', '평균 미세먼지 농도'])
-    Df_Result['분기'] = Df_Result['분기'].apply(lambda x: x[0])
-    Df_Result['평균 미세먼지 농도'] = Df_Result['평균 미세먼지 농도'].apply(lambda x: x[0])
+                    #avg_quater.append(avg_issueVal_quater)
+                    result_data.append([city, PMdata, year, quater, avg_issueVal_quater])
+                    print(f'{year}년도 4분기 : {avg_issueVal_quater}')
+                    print('-' * 50)
+                #result_data.append([city, PMdata, year, quater, avg_quater])
+            result_data_unique = [x for x in result_data if result_data.count(x) == 1]
+            print(result_data_unique)
+    Df_Result = pd.DataFrame(result_data_unique, columns=['발령 지역 명', '미세먼지 항목 구분', '발령 연도', '분기', '평균 미세먼지 농도'])
+    #Df_Result['분기'] = Df_Result['분기'].apply(lambda x: x[0])
+    #Df_Result['평균 미세먼지 농도'] = Df_Result['평균 미세먼지 농도'].apply(lambda x: x[0])
     print(Df_Result)
-    #Df_Result.to_csv(f'./QuaterDataFrame/{city}의 분기별 미세먼지 농도 추세.csv', encoding='utf-8')
-    #print('file is saved~!!')
+    Df_Result.to_csv(f'./QuaterDataFrame/{city}의 분기별 미세먼지 농도 추세.csv', encoding='utf-8')
+    print(f'{city} file is saved~!!')
     print('-' * 50)
-
