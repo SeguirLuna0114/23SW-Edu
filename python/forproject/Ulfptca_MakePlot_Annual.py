@@ -15,7 +15,7 @@ selected_df['issueVal'] = selected_df['issueVal'].astype(int)
 selected_df['issueDate'] = pd.to_datetime(selected_df['issueDate'])
 selected_df.fillna(0, inplace=True) #selected_df의 NaN 값이 모두 0으로 대체되어 원본이 변경되어 출력됨
 
-#수도권 별 인 데이터프레임 생성
+#수도권 & 연도별 데이터프레임 생성
 citylist = selected_df['districtName'].unique()
 listData = ['PM25', 'PM10']
 
@@ -37,8 +37,8 @@ for city in citylist:
     df_PM25 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM25']
     df_PM10 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM10']
     #kind='line'
-    plt.plot(df_PM25['발령 연도'], df_PM25['평균 미세먼지 농도'], color='r', label='PM25')
-    plt.plot(df_PM10['발령 연도'], df_PM10['평균 미세먼지 농도'], color='b', label='PM10')
+    plt.plot(df_PM25['발령 연도'], df_PM25['평균 미세먼지 농도'], color='r', label='PM25', marker='o')
+    plt.plot(df_PM10['발령 연도'], df_PM10['평균 미세먼지 농도'], color='b', label='PM10', marker='s')
     plt.xlabel('발령 연도')
     plt.ylabel('평균 미세먼지 농도')
     plt.title(f'{city}의 연도별 미세먼지 농도 추세')
