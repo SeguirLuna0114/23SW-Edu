@@ -35,7 +35,7 @@ for city in citylist:
                 #print(f'{year}년 {month}월 {PMdata}')
                 #print(avg_issueVal_month)
                 #print('-' * 40)
-                result_data.append([city, PMdata, f'{year}년 {month}월', avg_issueVal_month])
+                result_data.append([city, PMdata, f'{year}년 \n {month}월', avg_issueVal_month])
     Df_Result = pd.DataFrame(result_data, columns=['발령 지역 명', '미세먼지 항목 구분', '발령 연도별 월', '평균 미세먼지 농도'])
     print(Df_Result)
 
@@ -47,7 +47,7 @@ for city in citylist:
     plt.ylabel('평균 미세먼지 농도')
     plt.title(f'{city}의 월별 초미세먼지(PM25) 농도 추세')
     plt.legend()
-    plt.savefig(f'./MonthlyImage/{city}_월별_초미세먼지(PM25) 추세.png')
+    plt.savefig(f'./MonthlyImage/{city}_월별_초미세먼지(PM25)농도 추세.png', dpi=400)
     print(f'{city}_월별_초미세먼지(PM25) 추세.png file saved~!!')
     plt.show()
 
@@ -56,8 +56,8 @@ for city in citylist:
     plt.ylabel('평균 미세먼지 농도')
     plt.title(f'{city}의 월별 미세먼지(PM10) 농도 추세')
     plt.legend()
-    plt.savefig(f'./MonthlyImage/{city}_월별_미세먼지(PM10) 추세.png')
-    print(f'{city}_월별_미세먼지(PM10) 추세.png file saved~!!')
+    plt.savefig(f'./MonthlyImage/{city}_월별_미세먼지(PM10)농도 추세.png', dpi=400)
+    print(f'{city}_월별_미세먼지(PM10) 농도 추세.png file saved~!!')
     plt.show()
 
     plt.clf()
