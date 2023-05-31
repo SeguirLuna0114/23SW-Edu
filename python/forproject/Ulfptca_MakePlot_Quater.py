@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import json
 import numpy as np
+import seaborn as sns
 
 plt.rcParams['font.family'] = 'Malgun Gothic'  # Matplotlib의 기본 글꼴을 'Malgun Gothic'으로 설정
 
@@ -16,6 +17,7 @@ selected_df['issueDate'] = pd.to_datetime(selected_df['issueDate'])
 selected_df.fillna(0, inplace=True)  # selected_df의 NaN 값이 모두 0으로 대체되어 원본이 변경되어 출력됨
 
 # 수도권 & 연도별 데이터프레임 생성
+city_frames = []
 citylist = selected_df['districtName'].unique()
 listData = ['PM25', 'PM10']
 
@@ -77,7 +79,35 @@ for city in citylist:
     Df_Result = pd.DataFrame(result_data_unique, columns=['발령 지역 명', '미세먼지 항목 구분', '발령 연도', '분기', '평균 미세먼지 농도'])
     #Df_Result['분기'] = Df_Result['분기'].apply(lambda x: x[0])
     #Df_Result['평균 미세먼지 농도'] = Df_Result['평균 미세먼지 농도'].apply(lambda x: x[0])
+    print(f'{city}별 Df_Result 데이터프레임')
     print(Df_Result)
-    Df_Result.to_csv(f'./QuaterDataFrame/{city}의 분기별 미세먼지 농도 추세.csv', encoding='utf-8')
-    print(f'{city} file is saved~!!')
+    #Df_Result.to_csv(f'./QuaterDataFrame/{city}의 분기별 미세먼지 농도 추세.csv', encoding='utf-8')
+    #print(f'{city} file is saved~!!')
     print('-' * 50)
+
+    df_PM25 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM25']
+    df_PM10 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM10']
+    #kind='line'
+    plt.plot(df_PM25['분기'], df_PM25['평균 미세먼지 농도'], color='#FF00FF', label='PM25', marker='o')
+    plt.xlabel('분기')
+    plt.ylabel('평균 초미세먼지(PM25) 농도')
+    plt.title(f'{city}의 분기별 초미세먼지(PM25) 농도 추세')
+    #plt.xticks(rotation=90)
+    plt.legend()
+    plt.savefig(f'./QuaterImage/{city}_분기별_초미세먼지(PM25) 추세.png', dpi=400, bbox_inches='tight')
+    print(f'{city}_분기별_초미세먼지(PM25) 추세.png file saved~!!')
+    plt.show()
+
+    plt.plot(df_PM10['분기'], df_PM10['평균 미세먼지 농도'], color='#00FF00', label='PM10', marker='s')
+    plt.xlabel('분기')
+    plt.ylabel('평균 미세먼지(PM10) 농도')
+    plt.title(f'{city}의 분기별 미세먼지(PM10) 농도 추세')
+    #plt.xticks(rotation=90)
+    plt.legend()
+    plt.savefig(f'./QuaterImage/{city}_분기별_미세먼지(PM10) 추세.png', dpi=400, bbox_inches='tight')
+    print(f'{city}_분기별_미세먼지(PM10) 농도 추세.png file saved~!!')
+    plt.show()
+
+    plt.clf()
+
+
