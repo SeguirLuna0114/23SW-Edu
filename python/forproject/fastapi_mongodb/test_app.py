@@ -1,7 +1,6 @@
 from fastapi import FastAPI #FastAPI와 MongoDB를 사용하여 API를 구현
 from pymongo import mongo_client
 import pydantic
-import requests
 from bson.objectid import ObjectId
 import os.path
 import json
@@ -44,12 +43,13 @@ print('Connected to Mongodb Ubuntu....') #연결에 성공하면 "Connected to M
 
 # 이전에 초기화한 client 객체를 사용=>MongoDB의 'test' 데이터베이스에 접속하고, 'testdb' 컬렉션을 선택
 mydb = client['test'] # 'test' 데이터베이스에 접속
-mycol = mydb['AllUlfptcaAlarms'] # 컬렉션을 선택
+#mycol = mydb['AllUlfptcaAlarms'] # 'testdb' 컬렉션을 선택
+#=> mycol 객체를 통해 'test' 데이터베이스의 'testdb' 컬렉션에 접근가능
 
 # 애플리케이션 상태 확인
 @app.get('/')
 async def healthCheck():
-    return "OK_readytoRequest"
+    return "OK"
 
 # 주어진 URL에 HTTP 요청을 보내고, 성공적인 응답을 받아서 문자열로 반환
 def getRequestUrl(url):  
@@ -66,6 +66,12 @@ def getRequestUrl(url):
     except Exception as e:  # 예외가 발생
         print("[%s] Error for URL : %s" % (datetime.datetime.now(), url))  # 오류 메시지를 출력
         return None  # None을 반환
+
+@app.get('/getData_Mongo')
+async def getData_Mongo(collection):
+    #collection을 매개변수로 받음
+    mycol = mydb[collection] #mydb 데이터베이스 내에서 해당 컬렉션 선택
+    return list(mycol.find().limint(20)) #.find(): 컬렉션 내의 모든 문서 반환. #.limit(20): 반환할 문서의 수를 '20'으로 제한. #list()함수: 결과를 리스트형태로 반환
 
 @app.get('/getData_URL')
 async def getUlfptcaAlarmInfo(year: str = None):
@@ -156,48 +162,3 @@ async def getUlfptcaAlarmInfo(year: str = None):
         print('-' * 50)
 
         return validItem
-
-#단일연도 입력
-@app.get('/getData_tUlfptcaAlarmInfo_year')
-async def getUlfptcaAlarmInfo(year: str = None):
-    #year = int(year)
-    end_point = 'https://apis.data.go.kr/B552584/UlfptcaAlarmInqireSvc/getUlfptcaAlarmInfo'
-    parameters = ''
-    parameters += '?serviceKey=' + get_secret("data_apiKey")
-    parameters += '&returnType=json'
-    parameters += '&numOfRows=500'
-    parameters += '&pageNo=1'
-    parameters += '&year=' + str(year)
-    url = end_point + parameters
-    print(url)
-
-    response = requests.get(url)
-    print('-' * 50)
-        
-    #result_toJSON = response.json()
-    #return result_toJSON['response']['body']['items']
-        
-    contents = response.text
-    print(contents)
-    print('-' * 50)
-        
-    data_dict = json.loads(contents)
-    print(data_dict)
-    print('-' * 50)
-    
-    mycol.insert_many(data_dict)
-    return data_dict
-
-@app.get('/getMongoCollectionData')
-async def getMongoCollectionData(collectionName: str = None)
-    get_mycol = mydb[collectionName] # 컬렉션을 선택
-    return list(get_mycol.find().limit(10))
-
-@app.get('/dropMongoCollectionData')
-async def dropMongoCollectionData(collectionName: str = None):
-    drop_mycol = mydb[collectionName] #drop 컬렉션 선택
-    drop_mycol.drop()
-    return 'Drop selected collection...'
-
-
-
