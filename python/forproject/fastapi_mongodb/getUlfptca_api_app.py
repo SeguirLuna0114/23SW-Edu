@@ -207,9 +207,9 @@ def SaveDF_to_CSV(data_frame):
     except Exception as e:
         print(f'{e}: 파일 저장을 실패했습니다.')
         
-#MakePlot and Dataframe_Annual
+#연도별(2018, 2019, 2020, 2021, 2022, 2023) 데이터로 
 @app.get('/getUlfptca_DataFrame_Annual') #지역의 연도별 미세먼지농도 추세 df
-async def getUlfptca_DataFrame_Annual(city: str = None): #해당 지역의 PM2.5, PM10 미세먼지 농도를 연도별로 추세 분석
+def getUlfptca_DataFrame_Annual(city: str = None): #해당 지역의 PM2.5, PM10 미세먼지 농도를 연도별로 추세 분석
     plt.rcParams['font.family'] = 'Malgun Gothic'
     makeJSON('all') #data.json파일을 생성
     json_file = 'data.json' # 파일 이름 저장
@@ -223,22 +223,26 @@ async def getUlfptca_DataFrame_Annual(city: str = None): #해당 지역의 PM2.5
     result_data = [] #데이터 초기화
     
     if city == 'all':
-        result_data = [] # 데이터 초기화
+        result_data = []
         for city_name in selected_df['districtName'].unique():
-            df_city = pd.DataFrame(columns=['발령 지역 명', '미세먼지 항목 구분', '발령 연도', '평균 미세먼지 농도'])
+            # df_city = pd.DataFrame(columns=['발령 지역 명', '미세먼지 항목 구분', '발령 연도', '평균 미세먼지 농도'])
             for PMdata in listData:
-                print(f'{city}의 {PMdata} 농도 추세')
-                df_PMdata = selected_df.loc[(selected_df['districtName'] == city) & (selected_df['itemCode'] == PMdata), ['itemCode', 'issueDate', 'issueVal']]
+                print(f'연도별 {PMdata} 농도 추세')
+                df_PMdata = selected_df.loc[(selected_df['districtName'] == city_name) & (selected_df['itemCode'] == PMdata), ['itemCode', 'issueDate', 'issueVal']]
+                df_YearPMdata_list = []
                 for year in range(2018, 2024):
                     print(f'{year}년도 데이터')
                     df_YearPMdata = df_PMdata[df_PMdata['issueDate'].dt.year == year]
                     avg_issueVal_year = np.round(df_YearPMdata['issueVal'].mean(skipna=True))
                     print(avg_issueVal_year)
                     print('-' * 40)
-                    df_city = df_city.append({'발령 지역 명':city_name, '미세먼지 항목 구분':PMdata, '발령 연도':int(year), '평균 미세먼지 농도':int(avg_issueVal_year)}, ignore_index=True)
-            result_data.append(df_city)
-        Df_Result = pd.concat(result_data)
-        #SaveDF_to_CSV(Df_Result) #생성한 도시별 데이터프레임을 csv파일로 저장
+                    df_YearPMdata_list.append([city_name, PMdata, year, avg_issueVal_year])
+                if df_YearPMdata_list:
+                    df_YearPMdata_all = pd.DataFrame(df_YearPMdata_list, columns=['발령 지역 명', '미세먼지 항목 구분', '발령 연도', '평균 미세먼지 농도'])
+                    result_data.append(df_YearPMdata_all)
+                # result_data_unique = [x for x in result_data if result_data.count(x) == 1]
+        Df_Result = pd.concat(result_data, ignore_index=True, axis=0)
+        # SaveDF_to_CSV(Df_Result) #생성한 도시별 데이터프레임을 csv파일로 저장
         print(Df_Result)
     else:
         result_data = [] #데이터 초기화
@@ -253,10 +257,11 @@ async def getUlfptca_DataFrame_Annual(city: str = None): #해당 지역의 PM2.5
                 print('-' * 40)
                 result_data.append([city, PMdata, year, avg_issueVal_year])
         Df_Result = pd.DataFrame(result_data, columns=['발령 지역 명', '미세먼지 항목 구분', '발령 연도', '평균 미세먼지 농도'])
+        print(Df_Result)
     return Df_Result
 
 @app.get('/ShowUlfptca_DataFrame_Annual') #지역의 연도별 미세먼지농도 추세 df
-async def ShowUlfptca_DataFrame_Annual(city: str = None): #해당 지역의 PM2.5, PM10 미세먼지 농도를 연도별로 추세 분석
+def ShowUlfptca_DataFrame_Annual(city: str = None): #해당 지역의 PM2.5, PM10 미세먼지 농도를 연도별로 추세 분석
         Df_Result = getUlfptca_DataFrame_Annual(city) #만일 city에all이 입력되어도 전체도시관련 피벗테이블이 출력됨
         #pivot_table 생성
         pivot_Df_Result = Df_Result.pivot_table(index=['발령 지역 명', '발령 연도'], columns='미세먼지 항목 구분', values='평균 미세먼지 농도', fill_value=0)
@@ -264,25 +269,29 @@ async def ShowUlfptca_DataFrame_Annual(city: str = None): #해당 지역의 PM2.
         pivot_Df_Result.columns.name = None    # 피벗테이블의 컬럼이름 삭제
         print(pivot_Df_Result)
         return pivot_Df_Result
+    
 
-def merge_images(image_paths):
-    images = [Image.open(x) for x in image_paths]
+def merge_images(image_path_list):
+    images = [Image.open(image_path) for image_path in image_path_list]
     widths, heights = zip(*(i.size for i in images))
-    # 이미지 사이즈에 맞게 최소width와 최대height
-    min_width, total_height = min(widths), sum(heights)
 
-    new_im = Image.new('RGB', (min_width, total_height))
-    # 이미지 병합
-    y_offset = 0
-    for im in images:
-        new_im.paste(im, (0, y_offset))
-        y_offset += im.size[1]
-    return new_im
-###################################################################################
+    total_width = sum(widths)
+    max_height = max(heights)
+
+    new_image = Image.new('RGB', (total_width, max_height))
+
+    x_offset = 0
+    for image in images:
+        new_image.paste(image, (x_offset, 0))
+        x_offset += image.width
+
+    return new_image
+
+
 @app.get('/getUlfptca_Plot_Annual') #지역별 전체연도 미세먼지농도 추세 그래프
-async def getUlfptca_Plot_Annual(cities: list = None) #도시별 
+def getUlfptca_Plot_Annual(city: str = None): #도시별 
     #plt.rcParams['font.family'] = 'Malgun Gothic'
-    for city in cities:
+    #for city in cities:
         Df_Result = getUlfptca_DataFrame_Annual(city)
         df_PM25 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM25']
         df_PM10 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM10']
@@ -297,13 +306,47 @@ async def getUlfptca_Plot_Annual(cities: list = None) #도시별
         plt.savefig(f'./Files/YearImage/{city}연도별_미세먼지 추세.png')
         print(f'{city}_연도별_미세먼지 추세.png file saved~!!')
         plt.show()
-        plt.clf()
-    
-    image_path_list = [f"./Files/YearImage/{city}연도별_미세먼지 추세.png" for city in cities] # 이미지 파일 path 리스트 생성
-    merged_image = merge_images(image_path_list)
-    merged_image.save(f'./Files/YearImage/연도별 {cities}들의 미세먼지 농도 추세.png', 'PNG')
-    print(f'연도별 {cities}들의 미세먼지 농도 추세.png file saved...')
+        #plt.clf()
+        
+@app.get('/getUlfptca_Plot_AllCities')
+def getUlfptca_Plot_AllCities(year: int = None): #연도별 도시들의 미세먼지 농도 추세
+    Df_Result = getUlfptca_DataFrame_Annual('all')  # 전체 발령 데이터를 가져옴
 
+    if year is not None:
+        Df_Result = Df_Result[Df_Result['발령 연도'] == year]  # 입력된 연도와 일치하는 발령 데이터만 필터링
+        df_PM25 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM25']
+        df_PM10 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM10']
+
+        #초미세먼지 plot
+        plt.figure(figsize=(10, 6))
+        plt.plot(df_PM25['발령 지역 명'], df_PM25['평균 미세먼지 농도'], color='r', label='PM25', marker='o')
+        plt.xlabel('발령 지역 명(city)')
+        plt.ylabel('평균 미세먼지 농도')
+        plt.title(f'도시들의 {year}년도 초미세먼지(PM2.5) 농도 추세')
+        plt.legend()
+        plt.savefig(f'도시들의 {year}년도 초미세먼지(PM2.5) 농도 추세.png')
+        print(f'도시들의 {year}년도 초미세먼지(PM2.5) 농도 추세.png file saved~!!')
+        plt.show()
+
+        #미세먼지 plot
+        plt.figure(figsize=(10, 6))
+        plt.plot(df_PM10['발령 지역 명'], df_PM10['평균 미세먼지 농도'], color='b', label='PM10', marker='s')
+        plt.xlabel('발령 지역 명(city)')
+        plt.ylabel('평균 미세먼지 농도')
+        plt.title(f'도시들의 {year}년도 미세먼지(PM10) 농도 추세')
+        plt.legend()
+        plt.savefig(f'도시들의 {year}년도 미세먼지(PM10) 농도 추세.png')
+        print(f'도시들의 {year}년도 미세먼지(PM10) 농도 추세.png file saved~!!')
+        plt.show()
+        
+        image_path_list = [f'도시들의 {year}년도 미세먼지(PM10) 농도 추세.png', f'도시들의 {year}년도 초미세먼지(PM2.5) 농도 추세.png']
+        merged_image = merge_images(image_path_list)
+        merged_image.show()
+        merged_image.save(f'./Files/YearImage/연도별 도시들의 미세먼지 농도 추세.png', 'PNG')
+        print(f'연도별 도시들의 미세먼지 농도 추세.png file saved...')
+
+        
+#{year}-{month}월별 도시의 미세먼지농도
 @app.get('/getUlfptca_DataFrame_Monthly')
 async def getUlfptca_DataFrame_Monthly(city: str = None):
     plt.rcParams['font.family'] = 'Malgun Gothic'
