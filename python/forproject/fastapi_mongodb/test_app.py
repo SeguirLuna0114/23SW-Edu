@@ -51,18 +51,15 @@ mydb = client['test'] # 'test' 데이터베이스에 접속
 async def healthCheck():
     return "OK"
 
-# 주어진 URL에 HTTP 요청을 보내고, 성공적인 응답을 받아서 문자열로 반환
-def getRequestUrl(url):  
+#url을 활용하여 데이터 불러오기 -> 응답을 문자열로 디코딩
+def getRequestUrl(url):  # 주어진 URL에 HTTP 요청을 보내고, 성공적인 응답을 받아서 문자열로 반환
     # url을 매개변수로 받음
     req = urllib.request.Request(url)  # URL 요청을 나타내는 요청 객체 생성
-
     try:
         # urllib.request.urlopen() 함수: 요청 객체 req를 서버로 보내고, 서버로부터의 응답을 받음
         response = urllib.request.urlopen(req)
-
         if response.getcode() == 200:  # 성공적인 HTTP 요청인 경우
             return response.read().decode('utf-8')  # response.read()는 응답의 내용을 바이트로 읽어옴, 바이트를 UTF-8 문자열로 디코딩하여 반환
-
     except Exception as e:  # 예외가 발생
         print("[%s] Error for URL : %s" % (datetime.datetime.now(), url))  # 오류 메시지를 출력
         return None  # None을 반환
@@ -162,3 +159,32 @@ async def getUlfptcaAlarmInfo(year: str = None):
         print('-' * 50)
 
         return validItem
+
+def getUlfptcaAlarmInfo_year(year: int = None, itemCode: str = None):
+    if year is None: # year 변수가 None인 경우 현재 년도를 할당하도록 함
+        now = datetime.now()
+        current_year = now.year
+        year = current_year
+        return year
+    elif year is None or year < 2018 or year > 2023:
+        return '입력한 연도 관련 데이터가 존재하지 않습니다.'
+    else:
+        return year
+    
+    if itemCode is None: #itemCode 변수가 None인 경우 PM10과 PM25 모두 조회하도록
+        return ['PM10', 'PM25']
+    else:
+        return itemCode
+    
+    end_point = 'https://apis.data.go.kr/B552584/UlfptcaAlarmInqireSvc/getUlfptcaAlarmInfo'
+    # API 호출에 필요한 파라미터들을 저장하기 위함
+    parameters = ''
+    parameters += '?serviceKey=' + get_secret("data_apiKey")
+    parameters += '&returnType=json'
+    parameters += '&numOfRows=500'
+    parameters += '&pageNo=1'
+    parameters += '&year=' + str(year) #측정연도
+    parameters += '&itemCode=' + str(itemCode) #미세먼지 항목 구분(PM10, PM25), PM10/PM25 모두 조회할 경우 파라미터 생략
+    
+    url = end_point + parameters
+    print(url)
