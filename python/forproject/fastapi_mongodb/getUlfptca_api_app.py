@@ -125,7 +125,7 @@ def getUlfptcaAlarmInfo_ALL(year: Union[int, str] = None):
                 totalCount = result['response']['body']['totalCount']
                 print('데이터 총 개수 : ', totalCount)
                 for item in result['response']['body']['items']:
-                    response.append(item) #추가되는 연도별 데이터를 jsonResponse에 추가
+                    response.append(item) #추가되는 연도별 데이터를 response에 추가
                 if totalCount == 0:
                     break
             else:
@@ -187,56 +187,55 @@ async def mongoExport_csv(collectionName: str = None):
     return {'message': 'CSV file exported successfully.'}
 
 
-
-#MakePlot and Dataframe_Annual
-@app.get('/getUlfptca_DataFrame_Annual')
-async def getUlfptca_DataFrame_Annual(city: str = None):
-    result = []   
-    plt.rcParams['font.family'] = 'Malgun Gothic'
-
-    for year in range(2018, 2024):
-        end_point = 'https://apis.data.go.kr/B552584/UlfptcaAlarmInqireSvc/getUlfptcaAlarmInfo'
-    
-        parameters = ''
-        parameters += '?serviceKey=' + get_secret("data_apiKey")
-        parameters += '&returnType=json'
-        parameters += '&numOfRows=500'
-        parameters += '&pageNo=1'
-        parameters += '&year=' + str(year)
-        
-        url = end_point + parameters
-        print(url)
-        response = requests.get(url) #url주소에 HTTP GET요청을 보내고, 서버로부터 응답 받아옴 -> response객체로 반환됨
-  
-        contents = response.text #response 객체에서 JSON 형식의 데이터를 문자열로 추출
-        data_dict = json.loads(contents) #json.loads() 함수를 호출하여 이를 딕셔너리 객체로 변환
-
-        for item in data_dict['response']['body']['items']:
-            result.append(item)
-
-    selected_df = DataFrame(result, columns=['districtName', 'issueDate', 'issueGbn', 'issueVal', 'itemCode', 'moveName', 'sn'])
+def CreateDataFrame(json: str = None):
+    selected_df = pd.DataFrame(json, columns=['districtName', 'issueDate', 'issueGbn', 'issueVal', 'itemCode', 'moveName', 'sn'])
     selected_df = selected_df.set_index('sn')
     selected_df['issueVal'] = selected_df['issueVal'].astype(int)
     selected_df['issueDate'] = pd.to_datetime(selected_df['issueDate'])
     selected_df.fillna(0, inplace=True)
+    return selected_df #수정된 데이터프레임이 반환됨
 
-    #citylist = selected_df['districtName'].unique()
-    listData = ['PM25', 'PM10']
-    result_data = []
+#MakePlot and Dataframe_Annual
+@app.get('/getUlfptca_DataFrame_Annual')
+async def getUlfptca_DataFrame_Annual(city: str = None): 
+    plt.rcParams['font.family'] = 'Malgun Gothic'
+    makeJSON('all') #data.json파일을 생성
+    json_file = 'data.json' # 파일 이름 저장
+    
+    with open(json_file, 'r', encoding='utf-8') as file:
+        dataUlfptcaAlarms = json.load(file)
+
+    CreateDataFrame(dataUlfptcaAlarms) #selected_df을 생성
+
+    listData = selected_df['itemCode'].unique()
+    result_data = [] #데이터 초기화
     for PMdata in listData:
         print(f'{city}의 {PMdata} 농도 추세')
         df_PMdata = selected_df.loc[(selected_df['districtName'] == city) & (selected_df['itemCode'] == PMdata), ['itemCode', 'issueDate', 'issueVal']]
         for year in range(2018, 2024):
             print(f'{year}년도 데이터')
             df_YearPMdata = df_PMdata[df_PMdata['issueDate'].dt.year == year]
-            avg_issueVal_year = np.round(df_YearPMdata['issueVal'].mean(skipna=True))
-            print(avg_issueVal_year)
+            avg_issueVal_2year = np.round(df_YearPMdata['issueVal'].mean(skipna=True))
+            print(avg_issueVal_2year)
             print('-' * 40)
-            result_data.append([city, PMdata, year, avg_issueVal_year])
+            result_data.append([city, PMdata, year, avg_issueVal_2year])
     Df_Result = pd.DataFrame(result_data, columns=['발령 지역 명', '미세먼지 항목 구분', '발령 연도', '평균 미세먼지 농도'])
     print(Df_Result)
 
-    return Df_Result
+    df_PM25 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM25']
+    df_PM10 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM10']
+    #kind='line'
+    plt.plot(df_PM25['발령 연도'], df_PM25['평균 미세먼지 농도'], color='r', label='PM25', marker='o')
+    plt.plot(df_PM10['발령 연도'], df_PM10['평균 미세먼지 농도'], color='b', label='PM10', marker='s')
+    plt.xlabel('발령 연도(time: year)')
+    plt.ylabel('평균 미세먼지 농도')
+    plt.title(f'{city}의 연도별 미세먼지 농도 추세')
+    plt.legend()
+    plt.savefig(f'./Files/YearImage/{city}연도별_미세먼지 추세.png')
+    print(f'{city}_연도별_미세먼지 추세.png file saved~!!')
+    #plt.show()
+    plt.clf()
+
 
 
 
