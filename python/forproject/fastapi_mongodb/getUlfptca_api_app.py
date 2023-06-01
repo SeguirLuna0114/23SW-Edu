@@ -12,6 +12,7 @@ import numpy as np
 from datetime import datetime, timedelta
 from typing import Union
 from bson.objectid import ObjectId
+import matplotlib.pyplot as plt
 
 pydantic.json.ENCODERS_BY_TYPE[ObjectId] = str # ENCODERS_BY_TYPE: pydantic의 JSON 인코더가 MongoDB [ObjectId]를 문자열(str)로 인코딩할 수 있도록 설정
 
@@ -205,7 +206,7 @@ async def getUlfptca_DataFrame_Annual(city: str = None):
     with open(json_file, 'r', encoding='utf-8') as file:
         dataUlfptcaAlarms = json.load(file)
 
-    CreateDataFrame(dataUlfptcaAlarms) #selected_df을 생성
+    selected_df = CreateDataFrame(dataUlfptcaAlarms) #selected_df을 생성
 
     listData = selected_df['itemCode'].unique()
     result_data = [] #데이터 초기화
