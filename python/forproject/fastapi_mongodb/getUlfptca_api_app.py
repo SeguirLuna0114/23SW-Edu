@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 from typing import Union
 from bson.objectid import ObjectId
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 pydantic.json.ENCODERS_BY_TYPE[ObjectId] = str # ENCODERS_BY_TYPE: pydantic의 JSON 인코더가 MongoDB [ObjectId]를 문자열(str)로 인코딩할 수 있도록 설정
 
@@ -234,14 +235,246 @@ async def getUlfptca_DataFrame_Annual(city: str = None):
     plt.legend()
     plt.savefig(f'./Files/YearImage/{city}연도별_미세먼지 추세.png')
     print(f'{city}_연도별_미세먼지 추세.png file saved~!!')
-    #plt.show()
+    plt.show()
     plt.clf()
 
+@app.get('/getUlfptca_DataFrame_Monthly')
+async def getUlfptca_DataFrame_Monthly(city: str = None):
+    plt.rcParams['font.family'] = 'Malgun Gothic'
+    makeJSON('all') #data.json파일을 생성
+    json_file = 'data.json' # 파일 이름 저장
+    
+    with open(json_file, 'r', encoding='utf-8') as file:
+        dataUlfptcaAlarms = json.load(file)
 
+    selected_df = CreateDataFrame(dataUlfptcaAlarms) #selected_df을 생성
 
+    listData = selected_df['itemCode'].unique()
 
+    #for city in citylist:
+    result_data = [] #데이터 초기화
+    for PMdata in listData:
+        print(f'{city}의 월별 {PMdata} 농도 추세')
+        df_PMdata = selected_df.loc[(selected_df['districtName'] == city) & (selected_df['itemCode'] == PMdata), ['itemCode', 'issueDate', 'issueVal']]
 
+        for year in range(2018, 2024):
+            #print(f'{year}년도 데이터')
+            df_YearPMdata = df_PMdata[df_PMdata['issueDate'].dt.year == year]
+            months = df_YearPMdata['issueDate'].dt.month.unique()
 
+            for month in months:
+                df_MonthPMdata = df_YearPMdata[df_YearPMdata['issueDate'].dt.month == month]
+                avg_issueVal_month = np.round(df_MonthPMdata['issueVal'].mean(skipna=True))
+                #print(f'{year}년 {month}월 {PMdata}')
+                #print(avg_issueVal_month)
+                #print('-' * 40)
+                result_data.append([city, PMdata, f'{year}년 \n {month}월', avg_issueVal_month])
+    Df_Result = pd.DataFrame(result_data, columns=['발령 지역 명', '미세먼지 항목 구분', '발령 연도별 월', '평균 미세먼지 농도'])
+    print(Df_Result)
+
+    df_PM25 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM25']
+    df_PM10 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM10']
+    #kind='line'
+    plt.plot(df_PM25['발령 연도별 월'], df_PM25['평균 미세먼지 농도'], color='#FF00FF', label='PM25', marker='o')
+    plt.xlabel('경보발령 연도-월')
+    plt.ylabel('평균 미세먼지 농도')
+    plt.title(f'{city}의 월별 초미세먼지(PM25) 농도 추세')
+    plt.legend()
+    plt.savefig(f'./MonthlyImage/{city}_월별_초미세먼지(PM25)농도 추세.png', dpi=400)
+    print(f'{city}_월별_초미세먼지(PM25) 추세.png file saved~!!')
+    plt.show()
+
+    plt.plot(df_PM10['발령 연도별 월'], df_PM10['평균 미세먼지 농도'], color='#00FF00', label='PM10', marker='s')
+    plt.xlabel('경보발령 연도-월')
+    plt.ylabel('평균 미세먼지 농도')
+    plt.title(f'{city}의 월별 미세먼지(PM10) 농도 추세')
+    plt.legend()
+    plt.savefig(f'./MonthlyImage/{city}_월별_미세먼지(PM10)농도 추세.png', dpi=400)
+    print(f'{city}_월별_미세먼지(PM10) 농도 추세.png file saved~!!')
+    plt.show()
+
+    plt.clf()
+
+@app.get('/getUlfptca_DataFrame_Quarter')
+async def getUlfptca_DataFrame_Quarter(city: str = None):
+    plt.rcParams['font.family'] = 'Malgun Gothic'
+    makeJSON('all') #data.json파일을 생성
+    json_file = 'data.json' # 파일 이름 저장
+    
+    with open(json_file, 'r', encoding='utf-8') as file:
+        dataUlfptcaAlarms = json.load(file)
+
+    selected_df = CreateDataFrame(dataUlfptcaAlarms) #selected_df을 생성
+
+    city_frames = []
+    listData = selected_df['itemCode'].unique()
+#for city in citylist:
+    result_data = []  # 데이터 초기화
+    for PMdata in listData:
+        print(f'{city}의 분기별 {PMdata} 농도 추세')
+        df_PMdata = selected_df.loc[(selected_df['districtName'] == city) & (selected_df['itemCode'] == PMdata), ['itemCode', 'issueDate', 'issueVal']]
+        # df_PMdata['issueDate']
+        # 분기별 데이터
+        for year in range(2018, 2024):
+            print(f'{year}년도 데이터')
+            df_YearPMdata = df_PMdata[df_PMdata['issueDate'].dt.year == year]
+            months = df_YearPMdata['issueDate'].dt.month.unique()
+
+            for month in months: # month변수의 값에 따라 분기값을 설정
+                #quater = []
+                #avg_quater = []
+
+                if month in range(1, 4):
+                    #quater.append(f'{year}년도 1분기')
+                    quater = f'{year}년도 1분기'
+                    df_MonthPMdata = df_YearPMdata[df_YearPMdata['issueDate'].dt.month.isin([1, 2, 3])] # df_YearPMdata 데이터프레임에서 1,2,3월에 해당하는 데이터를 추출
+                    avg_issueVal_quater = np.round(df_MonthPMdata['issueVal'].mean(skipna=True)) # df_MonthPMdata 데이터프레임에서 issueVal열의 값들의 평균 계산
+                    #avg_quater.append(avg_issueVal_quater)
+                    result_data.append([city, PMdata, year, quater, avg_issueVal_quater])
+                    print(f'{year}년도 1분기 : {avg_issueVal_quater}')
+                    print('-' * 50)
+                elif month in range(4, 7):
+                    #quater.append(f'{year}년도 2분기')
+                    quater = f'{year}년도 2분기'
+                    df_MonthPMdata = df_YearPMdata[df_YearPMdata['issueDate'].dt.month.isin([4, 5, 6])]
+                    avg_issueVal_quater = np.round(df_MonthPMdata['issueVal'].mean(skipna=True))
+                    result_data.append([city, PMdata, year, quater, avg_issueVal_quater])
+                    #avg_quater.append(avg_issueVal_quater)
+                    print(f'{year}년도 2분기 : {avg_issueVal_quater}')
+                    # print('-' * 50)
+                elif month in range(7, 10):
+                    #quater.append(f'{year}년도 3분기')
+                    quater = f'{year}년도 3분기'
+                    df_MonthPMdata = df_YearPMdata[df_YearPMdata['issueDate'].dt.month.isin([7, 8, 9])]
+                    avg_issueVal_quater = np.round(df_MonthPMdata['issueVal'].mean(skipna=True))
+                    #avg_quater.append(avg_issueVal_quater)
+                    result_data.append([city, PMdata, year, quater, avg_issueVal_quater])
+                    print(f'{year}년도 3분기 : {avg_issueVal_quater}')
+                    print('-' * 50)
+                elif month in range(10, 13):
+                    #quater.append(f'{year}년도 4분기')
+                    quater = f'{year}년도 4분기'
+                    df_MonthPMdata = df_YearPMdata[df_YearPMdata['issueDate'].dt.month.isin([10, 11, 12])]
+                    avg_issueVal_quater = np.round(df_MonthPMdata['issueVal'].mean(skipna=True))
+                    #avg_quater.append(avg_issueVal_quater)
+                    result_data.append([city, PMdata, year, quater, avg_issueVal_quater])
+                    print(f'{year}년도 4분기 : {avg_issueVal_quater}')
+                    print('-' * 50)
+                #result_data.append([city, PMdata, year, quater, avg_quater])
+            result_data_unique = [x for x in result_data if result_data.count(x) == 1]
+            print(result_data_unique)
+    Df_Result = pd.DataFrame(result_data_unique, columns=['발령 지역 명', '미세먼지 항목 구분', '발령 연도', '분기', '평균 미세먼지 농도'])
+    #Df_Result['분기'] = Df_Result['분기'].apply(lambda x: x[0])
+    #Df_Result['평균 미세먼지 농도'] = Df_Result['평균 미세먼지 농도'].apply(lambda x: x[0])
+    print(f'{city}별 Df_Result 데이터프레임')
+    print(Df_Result)
+    #Df_Result.to_csv(f'./QuaterDataFrame/{city}의 분기별 미세먼지 농도 추세.csv', encoding='utf-8')
+    #print(f'{city} file is saved~!!')
+    print('-' * 50)
+
+    df_PM25 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM25']
+    df_PM10 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM10']
+    #kind='line'
+    plt.plot(df_PM25['분기'], df_PM25['평균 미세먼지 농도'], color='#FF00FF', label='PM25', marker='o')
+    plt.xlabel('분기')
+    plt.ylabel('평균 초미세먼지(PM25) 농도')
+    plt.title(f'{city}의 분기별 초미세먼지(PM25) 농도 추세')
+    #plt.xticks(rotation=90)
+    plt.legend()
+    plt.savefig(f'./QuaterImage/{city}_분기별_초미세먼지(PM25) 추세.png', dpi=400, bbox_inches='tight')
+    print(f'{city}_분기별_초미세먼지(PM25) 추세.png file saved~!!')
+    plt.show()
+
+    plt.plot(df_PM10['분기'], df_PM10['평균 미세먼지 농도'], color='#00FF00', label='PM10', marker='s')
+    plt.xlabel('분기')
+    plt.ylabel('평균 미세먼지(PM10) 농도')
+    plt.title(f'{city}의 분기별 미세먼지(PM10) 농도 추세')
+    #plt.xticks(rotation=90)
+    plt.legend()
+    plt.savefig(f'./QuaterImage/{city}_분기별_미세먼지(PM10) 추세.png', dpi=400, bbox_inches='tight')
+    print(f'{city}_분기별_미세먼지(PM10) 농도 추세.png file saved~!!')
+    plt.show()
+
+    plt.clf()
+
+@app.get('/getUlfptca_MakeBoxPlot_Quarter')
+async def getUlfptca_MakeBoxPlot_Quarter(q: int = None):
+    plt.rcParams['font.family'] = 'Malgun Gothic'
+    makeJSON('all') #data.json파일을 생성
+    json_file = 'data.json' # 파일 이름 저장
+    
+    with open(json_file, 'r', encoding='utf-8') as file:
+        dataUlfptcaAlarms = json.load(file)
+
+    selected_df = CreateDataFrame(dataUlfptcaAlarms) #selected_df을 생성
+
+    # '분기' 필드 형성
+    citylist = selected_df['districtName'].unique()
+    listData = ['PM25', 'PM10']
+
+    result_data = []
+    for city in citylist:
+        for PMdata in listData:
+            #print(f'{city}의 분기별 {PMdata} 농도 추세')
+            df_PMdata = selected_df.loc[(selected_df['districtName'] == city) & (selected_df['itemCode'] == PMdata), ['districtName', 'itemCode', 'issueDate', 'issueVal']]
+
+            df_YearPMdata_list = []
+            for year in range(2018, 2024):
+                #print(f'{year}년도 데이터')
+                df_YearPMdata = df_PMdata.loc[df_PMdata['issueDate'].dt.year == year, ['districtName', 'itemCode', 'issueDate', 'issueVal']]
+                months = df_YearPMdata['issueDate'].dt.month.unique()
+                #df_YearPMdata['Quarter'] = ''
+
+                df_Quarter_list = []
+                for month in months: # month변수의 값에 따라 분기값을 설정
+                    if month in range(1, 4):
+                        quarter = f'{year}년도 1분기'
+                        #df_YearPMdata.loc[df_YearPMdata['issueDate'].dt.month.isin([1, 2, 3]), 'quarter'] = quarter
+                        df_Q1 = df_YearPMdata.loc[df_YearPMdata['issueDate'].dt.month.isin([1, 2, 3]), ['districtName', 'itemCode', 'issueDate', 'issueVal']]
+                        df_Q1.loc[:, 'Quarter'] = quarter
+                        df_Quarter_list.append(df_Q1)
+                    elif month in range(4, 7):
+                        quarter = f'{year}년도 2분기'
+                        #df_YearPMdata.loc[df_YearPMdata['issueDate'].dt.month.isin([1, 2, 3]), 'quarter'] = quarter
+                        df_Q2 = df_YearPMdata.loc[df_YearPMdata['issueDate'].dt.month.isin([4, 5, 6]), ['districtName', 'itemCode', 'issueDate', 'issueVal']]
+                        df_Q2.loc[:, 'Quarter'] = quarter
+                        df_Quarter_list.append(df_Q2)
+                    elif month in range(7, 10):
+                        quarter = f'{year}년도 3분기'
+                        df_Q3 = df_YearPMdata.loc[df_YearPMdata['issueDate'].dt.month.isin([7, 8, 9]), ['districtName', 'itemCode', 'issueDate', 'issueVal']]
+                        df_Q3.loc[:, 'Quarter'] = quarter
+                        df_Quarter_list.append(df_Q3)
+                    elif month in range(10, 13):
+                        quarter = f'{year}년도 4분기'
+                        df_Q4 = df_YearPMdata.loc[df_YearPMdata['issueDate'].dt.month.isin([10, 11, 12]), ['districtName', 'itemCode', 'issueDate', 'issueVal']]
+                        df_Q4.loc[:, 'Quarter'] = quarter
+                        df_Quarter_list.append(df_Q4)
+
+                if df_Quarter_list:
+                    df_YearPMdata_quarter = pd.concat(df_Quarter_list, ignore_index=True, axis=0)
+                    df_YearPMdata_list.append(df_YearPMdata_quarter)
+                #print(df_YearPMdata_list)
+            if df_YearPMdata_list:
+                df_YearPMdata_all = pd.concat(df_YearPMdata_list, ignore_index=True, axis=0)
+                result_data.append(df_YearPMdata_all)
+                #print(df_YearPMdata_all)
+
+    Df_Result = pd.concat(result_data, ignore_index=True, axis=0)
+    print(Df_Result)
+    print('-'*50)
+    #print(Df_Result['Quarter'].unique())
+
+    #boxplot생성
+    #sns.set_style("darkgrid")
+    #for q in Df_Result['Quarter'].unique():
+    plt.figure(figsize=(12, 6))
+    plt.title(f'{q} 각 도시의 미세먼지 농도 Boxplot')
+    sns.boxplot(data=Df_Result, x='districtName', y='issueVal', hue='itemCode')
+    plt.xlabel(f'{q} 각 도시별 미세먼지 농도')
+    plt.ylabel('미세먼지 농도')
+    plt.legend()
+    plt.savefig(f'./QuaterBoxplot/{q}_도시별_미세먼지 농도 추세.png', dpi=400, bbox_inches='tight')
+    plt.show()
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=3000)
