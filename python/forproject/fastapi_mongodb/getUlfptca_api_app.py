@@ -342,11 +342,11 @@ def getUlfptca_Plot_AllCities(year: int = None): #연도별 도시들의 미세�
         print(f'도시들의 {year}년도 미세먼지(PM10) 농도 추세.png file saved~!!')
         plt.show()
         
-        image_path_list = [f'도시들의 {year}년도 미세먼지(PM10) 농도 추세.png', f'도시들의 {year}년도 초미세먼지(PM2.5) 농도 추세.png']
+        image_path_list = [f'./media/도시들의 {year}년도 미세먼지(PM10) 농도 추세.png', f'./media/도시들의 {year}년도 초미세먼지(PM2.5) 농도 추세.png']
         merged_image = merge_images(image_path_list)
         merged_image.show()
-        merged_image.save(f'./media/연도별 도시들의 미세먼지 농도 추세.png', 'PNG')
-        print(f'연도별 도시들의 미세먼지 농도 추세.png file saved...')
+        merged_image.save(f'./media/{year}년도 도시들의 미세먼지 농도 추세.png', 'PNG')
+        print(f'./media/{year}년도 도시들의 미세먼지 농도 추세.png file saved...')
 
         
 #{year}-{month}월별 도시의 미세먼지농도
@@ -385,7 +385,8 @@ async def getUlfptca_DataFrame_Monthly(city: str = None):
     print(Df_Result)
     return Df_Result
 
-
+@app.get('/getUlfptca_Plot_Monthly')
+async def getUlfptca_Plot_Monthly(city: str = None):
     df_PM25 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM25']
     df_PM10 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM10']
     #kind='line'
@@ -485,7 +486,10 @@ async def getUlfptca_DataFrame_Quarter(city: str = None):
     #Df_Result.to_csv(f'./QuaterDataFrame/{city}의 분기별 미세먼지 농도 추세.csv', encoding='utf-8')
     #print(f'{city} file is saved~!!')
     print('-' * 50)
+    return Df_Result
 
+@app.get('/getUlfptca_Plot_Quarter')
+async def getUlfptca_Plot_Quarter(city: str = None):
     df_PM25 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM25']
     df_PM10 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM10']
     #kind='line'
@@ -511,8 +515,8 @@ async def getUlfptca_DataFrame_Quarter(city: str = None):
 
     plt.clf()
 
-@app.get('/getUlfptca_MakeBoxPlot_Quarter')
-async def getUlfptca_MakeBoxPlot_Quarter(q: int = None):
+@app.get('/getUlfptca_AllDataFrame_Quarter')
+async def getUlfptca_AllDataFrame_Quarter(q: int = None):
     plt.rcParams['font.family'] = 'Malgun Gothic'
     makeJSON('all') #data.json파일을 생성
     json_file = 'data.json' # 파일 이름 저장
@@ -576,8 +580,12 @@ async def getUlfptca_MakeBoxPlot_Quarter(q: int = None):
     Df_Result = pd.concat(result_data, ignore_index=True, axis=0)
     print(Df_Result)
     print('-'*50)
+    return Df_Result
     #print(Df_Result['Quarter'].unique())
 
+
+@app.get('/getUlfptca_MakeBoxPlot_Quarter')
+async def getUlfptca_MakeBoxPlot_Quarter(q: int = None):
     #boxplot생성
     #sns.set_style("darkgrid")
     #for q in Df_Result['Quarter'].unique():
