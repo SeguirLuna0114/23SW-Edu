@@ -1,4 +1,4 @@
-from fastapi import FastAPI #FastAPI와 MongoDB를 사용하여 API를 구현
+from fastapi import FastAPI  # FastAPI와 MongoDB를 사용하여 API를 구현
 from pymongo import mongo_client
 from pymongo import InsertOne
 import pydantic
@@ -8,7 +8,8 @@ import os.path
 import os
 import requests
 import json
-import pandas as pd 
+import pandas as pd
+from PIL import Image
 import numpy as np
 from datetime import datetime, timedelta
 from typing import Union
@@ -16,6 +17,8 @@ from bson.objectid import ObjectId
 import matplotlib.pyplot as plt
 import seaborn as sns
 from PIL import Image
+import asyncio
+from aioconsole import ainput
 
 pydantic.json.ENCODERS_BY_TYPE[ObjectId] = str # ENCODERS_BY_TYPE: pydantic의 JSON 인코더가 MongoDB [ObjectId]를 문자열(str)로 인코딩할 수 있도록 설정
 
@@ -78,7 +81,7 @@ async def dropMongoCol(collectionName: str = None):
 #url에 http get요청을 보내고, 응답을 딕셔너리객체로 변환하는 함수
 def getRequestData(url):
     try:
-        response = requests.get(url)  # URL에 HTTP GET 요청을 보냄
+        response = requests.get(url, verify=False)  # URL에 HTTP GET 요청을 보냄
         response.raise_for_status()  # 2xx 이외의 상태 코드가 반환되면 예외 발생
         contents = response.text  # 응답에서 JSON 형식의 문자열 추출
         data_dict = json.loads(contents)  # JSON 문자열을 딕셔너리 객체로 변환
@@ -121,7 +124,7 @@ def getUlfptcaAlarmInfo_ALL(year: Union[int, str] = None):
     if isinstance(year, int):
         return getUlfptcaAlarmInfo_year(year)
     
-    if isinstance(year, str) and year.lower() == 'all':
+    if isinstance(year, str) and (year.lower() == 'all'):
         response = []
         for y in range(2018, 2024): #2018~2024
             result = getUlfptcaAlarmInfo_year(y)
@@ -303,7 +306,7 @@ def getUlfptca_Plot_Annual(city: str = None): #도시별
         plt.ylabel('평균 미세먼지 농도')
         plt.title(f'{city}의 연도별 미세먼지 농도 추세')
         plt.legend()
-        plt.savefig(f'./Files/YearImage/{city}연도별_미세먼지 추세.png')
+        plt.savefig(f'./media/{city}연도별_미세먼지 추세.png')
         print(f'{city}_연도별_미세먼지 추세.png file saved~!!')
         plt.show()
         #plt.clf()
@@ -324,7 +327,7 @@ def getUlfptca_Plot_AllCities(year: int = None): #연도별 도시들의 미세�
         plt.ylabel('평균 미세먼지 농도')
         plt.title(f'도시들의 {year}년도 초미세먼지(PM2.5) 농도 추세')
         plt.legend()
-        plt.savefig(f'도시들의 {year}년도 초미세먼지(PM2.5) 농도 추세.png')
+        plt.savefig(f'./media/도시들의 {year}년도 초미세먼지(PM2.5) 농도 추세.png')
         print(f'도시들의 {year}년도 초미세먼지(PM2.5) 농도 추세.png file saved~!!')
         plt.show()
 
@@ -335,14 +338,14 @@ def getUlfptca_Plot_AllCities(year: int = None): #연도별 도시들의 미세�
         plt.ylabel('평균 미세먼지 농도')
         plt.title(f'도시들의 {year}년도 미세먼지(PM10) 농도 추세')
         plt.legend()
-        plt.savefig(f'도시들의 {year}년도 미세먼지(PM10) 농도 추세.png')
+        plt.savefig(f'./media/도시들의 {year}년도 미세먼지(PM10) 농도 추세.png')
         print(f'도시들의 {year}년도 미세먼지(PM10) 농도 추세.png file saved~!!')
         plt.show()
         
         image_path_list = [f'도시들의 {year}년도 미세먼지(PM10) 농도 추세.png', f'도시들의 {year}년도 초미세먼지(PM2.5) 농도 추세.png']
         merged_image = merge_images(image_path_list)
         merged_image.show()
-        merged_image.save(f'./Files/YearImage/연도별 도시들의 미세먼지 농도 추세.png', 'PNG')
+        merged_image.save(f'./media/연도별 도시들의 미세먼지 농도 추세.png', 'PNG')
         print(f'연도별 도시들의 미세먼지 농도 추세.png file saved...')
 
         
@@ -391,7 +394,7 @@ async def getUlfptca_DataFrame_Monthly(city: str = None):
     plt.ylabel('평균 미세먼지 농도')
     plt.title(f'{city}의 월별 초미세먼지(PM25) 농도 추세')
     plt.legend()
-    plt.savefig(f'./MonthlyImage/{city}_월별_초미세먼지(PM25)농도 추세.png', dpi=400)
+    plt.savefig(f'./media/{city}_월별_초미세먼지(PM25)농도 추세.png', dpi=400)
     print(f'{city}_월별_초미세먼지(PM25) 추세.png file saved~!!')
     plt.show()
 
@@ -400,7 +403,7 @@ async def getUlfptca_DataFrame_Monthly(city: str = None):
     plt.ylabel('평균 미세먼지 농도')
     plt.title(f'{city}의 월별 미세먼지(PM10) 농도 추세')
     plt.legend()
-    plt.savefig(f'./MonthlyImage/{city}_월별_미세먼지(PM10)농도 추세.png', dpi=400)
+    plt.savefig(f'./media/{city}_월별_미세먼지(PM10)농도 추세.png', dpi=400)
     print(f'{city}_월별_미세먼지(PM10) 농도 추세.png file saved~!!')
     plt.show()
 
@@ -492,7 +495,7 @@ async def getUlfptca_DataFrame_Quarter(city: str = None):
     plt.title(f'{city}의 분기별 초미세먼지(PM25) 농도 추세')
     #plt.xticks(rotation=90)
     plt.legend()
-    plt.savefig(f'./QuaterImage/{city}_분기별_초미세먼지(PM25) 추세.png', dpi=400, bbox_inches='tight')
+    plt.savefig(f'./media/{city}_분기별_초미세먼지(PM25) 추세.png', dpi=400, bbox_inches='tight')
     print(f'{city}_분기별_초미세먼지(PM25) 추세.png file saved~!!')
     plt.show()
 
@@ -502,7 +505,7 @@ async def getUlfptca_DataFrame_Quarter(city: str = None):
     plt.title(f'{city}의 분기별 미세먼지(PM10) 농도 추세')
     #plt.xticks(rotation=90)
     plt.legend()
-    plt.savefig(f'./QuaterImage/{city}_분기별_미세먼지(PM10) 추세.png', dpi=400, bbox_inches='tight')
+    plt.savefig(f'./media/{city}_분기별_미세먼지(PM10) 추세.png', dpi=400, bbox_inches='tight')
     print(f'{city}_분기별_미세먼지(PM10) 농도 추세.png file saved~!!')
     plt.show()
 
@@ -584,7 +587,7 @@ async def getUlfptca_MakeBoxPlot_Quarter(q: int = None):
     plt.xlabel(f'{q} 각 도시별 미세먼지 농도')
     plt.ylabel('미세먼지 농도')
     plt.legend()
-    plt.savefig(f'./QuaterBoxplot/{q}_도시별_미세먼지 농도 추세.png', dpi=400, bbox_inches='tight')
+    plt.savefig(f'./media/{q}_도시별_미세먼지 농도 추세.png', dpi=400, bbox_inches='tight')
     plt.show()
 
 if __name__ == "__main__":
