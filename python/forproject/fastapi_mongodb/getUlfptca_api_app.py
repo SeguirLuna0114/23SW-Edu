@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI  # FastAPI와 MongoDB를 사용하여 API를 구현
 from pymongo import mongo_client
 from pymongo import InsertOne
@@ -380,35 +381,49 @@ async def getUlfptca_DataFrame_Monthly(city: str = None):
                 #print(f'{year}년 {month}월 {PMdata}')
                 #print(avg_issueVal_month)
                 #print('-' * 40)
-                result_data.append([city, PMdata, f'{year}-{month}월', avg_issueVal_month])
+                result_data.append([city, PMdata, f'{year}-{month}', avg_issueVal_month])
     Df_Result = pd.DataFrame(result_data, columns=['발령 지역 명', '미세먼지 항목 구분', '발령 연도별 월', '평균 미세먼지 농도'])
     print(Df_Result)
     return Df_Result
 
 @app.get('/getUlfptca_Plot_Monthly')
 async def getUlfptca_Plot_Monthly(city: str = None):
-    df_PM25 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM25']
-    df_PM10 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM10']
-    #kind='line'
-    plt.plot(df_PM25['발령 연도별 월'], df_PM25['평균 미세먼지 농도'], color='#FF00FF', label='PM25', marker='o')
-    plt.xlabel('경보발령 연도-월')
-    plt.ylabel('평균 미세먼지 농도')
-    plt.title(f'{city}의 월별 초미세먼지(PM25) 농도 추세')
-    plt.legend()
-    plt.savefig(f'./media/{city}_월별_초미세먼지(PM25)농도 추세.png', dpi=400)
-    print(f'{city}_월별_초미세먼지(PM25) 추세.png file saved~!!')
-    plt.show()
+    Df_Result = getUlfptca_DataFrame_Monthly(city)
+    if city is not None:
+        Df_Result = Df_Result[Df_Result['발령 지역 명'] == city]
 
-    plt.plot(df_PM10['발령 연도별 월'], df_PM10['평균 미세먼지 농도'], color='#00FF00', label='PM10', marker='s')
-    plt.xlabel('경보발령 연도-월')
-    plt.ylabel('평균 미세먼지 농도')
-    plt.title(f'{city}의 월별 미세먼지(PM10) 농도 추세')
-    plt.legend()
-    plt.savefig(f'./media/{city}_월별_미세먼지(PM10)농도 추세.png', dpi=400)
-    print(f'{city}_월별_미세먼지(PM10) 농도 추세.png file saved~!!')
-    plt.show()
+        df_PM25 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM25']
+        df_PM10 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM10']
+        #kind='line'
+        plt.figure(figsize=(10, 6))
+        plt.plot(df_PM25['발령 연도별 월'], df_PM25['평균 미세먼지 농도'], color='#FF00FF', label='PM25', marker='o')
+        plt.xlabel('경보발령 연도-월')
+        plt.xticks(rotation=45)  # x축 눈금을 90도 회전
+        plt.ylabel('평균 미세먼지 농도')
+        plt.title(f'{city}의 월별 초미세먼지(PM25) 농도 추세')
+        plt.legend()
+        plt.savefig(f'./media/{city}_월별_초미세먼지(PM25)농도 추세.png', dpi=400)
+        print(f'{city}_월별_초미세먼지(PM25) 추세.png file saved~!!')
+        plt.show()
 
-    plt.clf()
+        plt.figure(figsize=(10, 6))
+        plt.plot(df_PM10['발령 연도별 월'], df_PM10['평균 미세먼지 농도'], color='#00FF00', label='PM10', marker='s')
+        plt.xlabel('경보발령 연도-월')
+        plt.xticks(rotation=45)  # x축 눈금을 90도 회전
+        plt.ylabel('평균 미세먼지 농도')
+        plt.title(f'{city}의 월별 미세먼지(PM10) 농도 추세')
+        plt.legend()
+        plt.savefig(f'./media/{city}_월별_미세먼지(PM10)농도 추세.png', dpi=400)
+        print(f'{city}_월별_미세먼지(PM10) 농도 추세.png file saved~!!')
+        plt.show()
+
+        #plt.clf()
+        image_path_list = [f'./media/{city}_월별_미세먼지(PM10)농도 추세.png', f'./media/{city}_월별_초미세먼지(PM25)농도 추세.png']
+        merged_image = merge_images(image_path_list)
+        merged_image.show()
+        merged_image.save(f'./media/{city}_월별_미세먼지 농도 추세_All.png', 'PNG')
+        print(f'./media/{city}_월별_미세먼지 농도 추세_All.png file saved...')
+
 
 @app.get('/getUlfptca_DataFrame_Quarter')
 async def getUlfptca_DataFrame_Quarter(city: str = None):
@@ -490,33 +505,45 @@ async def getUlfptca_DataFrame_Quarter(city: str = None):
 
 @app.get('/getUlfptca_Plot_Quarter')
 async def getUlfptca_Plot_Quarter(city: str = None):
-    df_PM25 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM25']
-    df_PM10 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM10']
-    #kind='line'
-    plt.plot(df_PM25['분기'], df_PM25['평균 미세먼지 농도'], color='#FF00FF', label='PM25', marker='o')
-    plt.xlabel('분기')
-    plt.ylabel('평균 초미세먼지(PM25) 농도')
-    plt.title(f'{city}의 분기별 초미세먼지(PM25) 농도 추세')
-    #plt.xticks(rotation=90)
-    plt.legend()
-    plt.savefig(f'./media/{city}_분기별_초미세먼지(PM25) 추세.png', dpi=400, bbox_inches='tight')
-    print(f'{city}_분기별_초미세먼지(PM25) 추세.png file saved~!!')
-    plt.show()
+    Df_Result = getUlfptca_DataFrame_Quarter(city)
+    if city is not None:
+        df_PM25 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM25']
+        df_PM10 = Df_Result[Df_Result['미세먼지 항목 구분'] == 'PM10']
+        #kind='line'
+        plt.figure(figsize=(10, 6))
+        plt.plot(df_PM25['분기'], df_PM25['평균 미세먼지 농도'], color='#FF00FF', label='PM25', marker='o')
+        plt.xlabel('분기')
+        plt.xticks(rotation=45)
+        plt.ylabel('평균 초미세먼지(PM25) 농도')
+        plt.title(f'{city}의 분기별 초미세먼지(PM25) 농도 추세')
+        #plt.xticks(rotation=90)
+        plt.legend()
+        plt.savefig(f'./media/{city}_분기별_초미세먼지(PM25) 추세.png', dpi=400, bbox_inches='tight')
+        print(f'{city}_분기별_초미세먼지(PM25) 추세.png file saved~!!')
+        plt.show()
 
-    plt.plot(df_PM10['분기'], df_PM10['평균 미세먼지 농도'], color='#00FF00', label='PM10', marker='s')
-    plt.xlabel('분기')
-    plt.ylabel('평균 미세먼지(PM10) 농도')
-    plt.title(f'{city}의 분기별 미세먼지(PM10) 농도 추세')
-    #plt.xticks(rotation=90)
-    plt.legend()
-    plt.savefig(f'./media/{city}_분기별_미세먼지(PM10) 추세.png', dpi=400, bbox_inches='tight')
-    print(f'{city}_분기별_미세먼지(PM10) 농도 추세.png file saved~!!')
-    plt.show()
+        plt.figure(figsize=(10, 6))
+        plt.plot(df_PM10['분기'], df_PM10['평균 미세먼지 농도'], color='#00FF00', label='PM10', marker='s')
+        plt.xlabel('분기')
+        plt.xticks(rotation=45)
+        plt.ylabel('평균 미세먼지(PM10) 농도')
+        plt.title(f'{city}의 분기별 미세먼지(PM10) 농도 추세')
+        #plt.xticks(rotation=90)
+        plt.legend()
+        plt.savefig(f'./media/{city}_분기별_미세먼지(PM10) 추세.png', dpi=400, bbox_inches='tight')
+        print(f'{city}_분기별_미세먼지(PM10) 농도 추세.png file saved~!!')
+        plt.show()
 
-    plt.clf()
+        #plt.clf()
+        image_path_list = [f'./media/{city}_분기별_미세먼지(PM10) 추세.png', f'./media/{city}_분기별_초미세먼지(PM25) 추세.png']
+        merged_image = merge_images(image_path_list)
+        merged_image.show()
+        merged_image.save(f'./media/{city}_분기별_미세먼지 농도 추세_All.png', 'PNG')
+        print(f'./media/{city}_분기별_미세먼지 농도 추세_All.png file saved...')
+
 
 @app.get('/getUlfptca_AllDataFrame_Quarter')
-async def getUlfptca_AllDataFrame_Quarter(q: int = None):
+async def getUlfptca_AllDataFrame_Quarter():
     plt.rcParams['font.family'] = 'Malgun Gothic'
     makeJSON('all') #data.json파일을 생성
     json_file = 'data.json' # 파일 이름 저장
@@ -583,20 +610,77 @@ async def getUlfptca_AllDataFrame_Quarter(q: int = None):
     return Df_Result
     #print(Df_Result['Quarter'].unique())
 
+@app.get('/ShowUlfptca_AllDataFrame_Quarter')
+def ShowUlfptca_AllDataFrame_Quarter():
+        Df_Result = getUlfptca_AllDataFrame_Quarter() #만일 city에all이 입력되어도 전체도시관련 피벗테이블이 출력됨
+        #pivot_table 생성
+        pivot_Df_Result = Df_Result.pivot_table(index=['districtName', 'issueDate'], columns='itemCode', values='issueVal', fill_value=0)
+        pivot_Df_Result.reset_index(inplace=True) # index를 컬럼으로 변환
+        pivot_Df_Result.columns.name = None    # 피벗테이블의 컬럼이름 삭제
+        print(pivot_Df_Result)
+        return pivot_Df_Result
+
+@app.get('/ShowUlfptca_AllDataFrame_Quarter')
+def ShowUlfptca_AllDataFrame_Quarter(q: int = None):
+        Df_Result = getUlfptca_AllDataFrame_Quarter() #만일 city에all이 입력되어도 전체도시관련 피벗테이블이 출력됨
+        q = str(q)
+        if q is not None:
+            Df_selected_quarter = Df_Result[Df_Result['Quarter'].apply(lambda x: x.split(' ')[1]) == f'{q}분기']
+            print('-' * 40)
+            print(Df_q)       
+        
+            #pivot_table 생성
+            pivot_Df_quarterResult = Df_selected_quarter.pivot_table(index=['districtName', 'issueDate'], columns='itemCode', values='issueVal', fill_value=0)
+            pivot_Df_quarterResult.reset_index(inplace=True) # index를 컬럼으로 변환
+            pivot_Df_quarterResult.columns.name = None    # 피벗테이블의 컬럼이름 삭제
+            print(pivot_Df_quarterResult)
+            return pivot_Df_quarterResult
+
 
 @app.get('/getUlfptca_MakeBoxPlot_Quarter')
 async def getUlfptca_MakeBoxPlot_Quarter(q: int = None):
-    #boxplot생성
-    #sns.set_style("darkgrid")
-    #for q in Df_Result['Quarter'].unique():
-    plt.figure(figsize=(12, 6))
-    plt.title(f'{q} 각 도시의 미세먼지 농도 Boxplot')
-    sns.boxplot(data=Df_Result, x='districtName', y='issueVal', hue='itemCode')
-    plt.xlabel(f'{q} 각 도시별 미세먼지 농도')
-    plt.ylabel('미세먼지 농도')
-    plt.legend()
-    plt.savefig(f'./media/{q}_도시별_미세먼지 농도 추세.png', dpi=400, bbox_inches='tight')
-    plt.show()
+    Df_Result = getUlfptca_AllDataFrame_Quarter()
+    q = str(q)
+    year = str(year)
+    quarter = f'{year}년도 {q}분기'
+    if quarter in Df_Result['Quarter'].unique():
+        Df_qny = Df_Result[Df_Result['Quarter'] == quarter]
+        print(Df_qny)
+
+        df_PM10 = Df_qny[Df_qny['itemCode'] == 'PM10']
+        df_PM25 = Df_qny[Df_qny['itemCode'] == 'PM25']
+        #print('-' * 40)
+        #print(Df_q)
+        #print('-' * 40)
+        #boxplot생성
+        #sns.set_style("darkgrid")
+        #for q in Df_Result['Quarter'].unique():
+        plt.figure(figsize=(12, 6))
+        plt.title(f'{quarter} 각 도시의 미세먼지(PM10) 농도 Boxplot')
+        sns.boxplot(data=df_PM10, x='districtName', y='issueVal', hue='itemCode')
+        plt.xlabel(f'주요 도시')
+        plt.xticks(rotation=45)
+        plt.ylabel('미세먼지(PM10) 농도')
+        plt.legend()
+        plt.savefig(f'./media/{quarter} 각 도시의 미세먼지(PM10) 농도 Boxplot.png', dpi=400, bbox_inches='tight')
+        plt.show()
+
+        plt.figure(figsize=(12, 6))
+        plt.title(f'{quarter} 각 도시의 초미세먼지(PM2.5) 농도 Boxplot')
+        sns.boxplot(data=df_PM25, x='districtName', y='issueVal', hue='itemCode')
+        plt.xlabel(f'주요 도시')
+        plt.xticks(rotation=45)
+        plt.ylabel('초미세먼지(PM2.5) 농도')
+        plt.legend()
+        plt.savefig(f'./media/{quarter} 각 도시의 초미세먼지(PM2.5) 농도 Boxplot.png', dpi=400, bbox_inches='tight')
+        plt.show()
+
+        #plt.clf()
+        image_path_list = [f'./media/{quarter} 각 도시의 초미세먼지(PM2.5) 농도 Boxplot.png', f'./media/{quarter} 각 도시의 미세먼지(PM10) 농도 Boxplot.png']
+        merged_image = merge_images(image_path_list)
+        merged_image.show()
+        merged_image.save(f'./media/{quarter} 각 도시의 미세먼지(PM10&PM2.5) 농도 Boxplot.png', 'PNG')
+        print(f'./media/{quarter} 각 도시의 미세먼지(PM10&PM2.5) 농도 Boxplot.png file saved...')
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=3000)
