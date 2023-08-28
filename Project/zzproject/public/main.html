@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>강남구 반려동물 관련 업소 예약</title>
+    <link type="text/css" rel="stylesheet" href="mystyle.css">
+    <style>
+        h1 {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>강남구 소속 반려동물 관련 업소</h1>
+    <hr />
+    <nav id="menubar">
+        <ul>
+            <li style="float : left;"><a href="/reservation.html">마이예약페이지</a></li>
+            <li style="float : right;"><a href="/index.html">로그아웃</a></li>
+        </ul>
+    </nav>
+    <form action="/insert" target="targetURL" name="shopForm2" method="post">
+
+        <div class="main-container">
+            <div class="login-input-wrap">
+                <p><input type="text" name="resNumber" placeholder="휴대전화 번호를 입력하세요. 예) 01012341234" /></p>
+            </div>
+            <div class="login-input-wrap">
+                <p><input type="text" name="userId" placeholder="아이디를 입력하세요." /></p>
+            </div>
+            <div class="login-input-wrap">
+                <p><input type="text" name="shopId" placeholder="예약을 원하는 가게의 Id를 입력하세요. 예)1001" /></p>
+            </div>
+            <div class="login-input-wrap">
+                <p><input type="text" name="resDate" placeholder="예약을 원하는 날짜를 입력하세요. 예) 2023-00-00" /></p>
+            </div>
+            <div class="login-input-wrap">
+                <p><input type="text" name="shopService" placeholder="예약을 원하는 서비스명을 입력하세요." /></p>
+            </div>
+            <div class="login-input-wrap">
+                <input type="submit" value="예약하기" />
+            </div>
+    </form>
+
+    <form action="/selectDong" target="targetURL" name="shopForm" method="get">
+        <br>
+
+        <div class="main-container">
+            <div class="login-input-wrap">
+                <p><input type="text" name="shopArea" placeholder="동을 입력하세요." /></p>
+            </div>
+            <div class="login-input-wrap">
+                <input type="button" value="검색"
+                    onclick='document.targetURL.location.href="/selectDong?shopArea="+document.shopForm.shopArea.value' />
+            </div>
+            <br>
+    </form>
+    <div>
+        <iframe name="targetURL" width="1000" height="1000" style="border: none" src="/select"></iframe>
+    </div>
+</body>
+
+</html>

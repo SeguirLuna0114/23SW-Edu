@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link type="text/css" rel="stylesheet" href="mystyle.css">
+</head>
+
+<body>
+    <center>
+        <h1>Input your favorite places!</h1>
+        <hr class="head">
+        <div style="border: 0; float: left; width: 50%; margin-top: 40px;">
+            <form id="admin_form" action="/place_insert" name="mongoForm" method="post" target="targetURL"
+                style="margin-top: 62px" ;>
+                <p>관광지 이름 <input type="text" size="20" name="place_name"></p>
+                <p>관광지 유형 <input type="text" size="20" name="type"></p>
+                <p>지역 <input type="text" style="margin-left: 52px;" size="20" name="location"></p>
+
+                <input type="submit" value="insert" onclick="this.form.action='/place_insert'">&nbsp;&nbsp;
+                <input type="submit" value="update" onclick="this.form.action='/place_update'">&nbsp;&nbsp;
+                <input type="submit" value="delete" onclick="this.form.action='/place_delete'">&nbsp;&nbsp;
+                <input style="margin-bottom: 10px;" type="reset" value="reset text">
+            </form>
+        </div>
+
+        <div style="border: 0; float: left; width: 50%; margin-top: 40px;">
+            <h3 style="text-align: center;">저장 되어있는 관광지</h3>
+            <iframe name="targetURL" height="600" style="border:none; margin-right: 300px;" src="/select">
+        </div>
+</body>
+</center>
+
+</html>

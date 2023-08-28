@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link type="text/css" rel="stylesheet" href="mystyle.css">
+</head>
+
+<h2>Find Clothes</h2>
+<hr class="head">
+<div style="border: 0; float: left; width: 50%; margin-top: 100px;">
+    <form id="admin_form" action="/find_my_cloth" name="userForm" method="post" target="targetURL">
+        <p>Now temp<input style="margin-left: 10px;" type="text" size="15" name="now_temp"></p>
+        <p>Category<input style="margin-left: 19px;" type="text" size="15" name="cloth_category"></p>
+
+        <input type="submit" value="find">&nbsp;&nbsp;
+
+        <input style="margin-bottom: 10px;" type="reset" value="reset text">
+    </form>
+</div>
+
+<div style="border: 0; float: left; width: 50%; margin-top: 40px;">
+    <h3 style="text-align: center; margin-right: 100px;">옷 목록</h3>
+    <iframe style="border:none; margin-left: 10px;" name="targetURL" src="/select_clothes">
+</div>
+</body>
+
+</html>

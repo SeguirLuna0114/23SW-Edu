@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>May Weather</title>
+    <link type="text/css" rel="stylesheet" href="mystyle.css">
+    <script>
+        function load_mini(URL) {
+            window.open(URL, "miniWin", "left=600,top=100,width=750,height=700");
+        }
+        function load_full(URL) {
+            window.open(URL, "fullWin");
+        }
+    </script>
+
+</head>
+
+<body>
+
+    <div>
+        <center><img src="mayweather.png" style="width: 500px;"></center>
+    </div>
+    <h3 style="margin-left: 50px;">Today&nbsp;:&nbsp;20230313</h3>
+
+    <div id="menu" style="margin-right: 50px;"></div>
+
+    <div id="map" style="width:500px; height:500px; margin-top: 30px;"></div>
+
+    <div style="float: right; margin-right: 50px;"><a href="new_place_input.html" target="_self">새로운 관광지
+            추가&nbsp;✓&nbsp;&nbsp;&nbsp;&nbsp;</div>
+    <br>
+    <div style="float: right; margin-right: 50px;"><a href="new_cloth_input.html" target="_self">새로운 옷
+            추가&nbsp;✓&nbsp;&nbsp;&nbsp;&nbsp;</div><br>
+    <div style="float: right; margin-right: 50px;"><a href="cloth_find.html" target="_self">현재 기온으로 옷
+            추천&nbsp;✓&nbsp;&nbsp;&nbsp;&nbsp;</div><br>
+    <div style="float: right; margin-right: 50px;"><a href="place_find.html" target="_self">현재 지역 및 날씨로 관광지 추천&nbsp;✓
+            &nbsp;&nbsp;&nbsp;</div>
+
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=6c55efbdf9d38223f8ee2c7360dc0512">
+    </script>
+    <script>
+        window.onload = () => {
+
+            let days = new Array("20230314", "20230315", "20230316", "20230317", "20230318", "20230319");
+            let locs = new Array("서울", "경기", "인천", "강원", "충남", "대전", "충북", "세종", "부산", "울산", "대구", "경북", "경남", "전남", "전북", "제주")
+
+            var menu_view = ``
+            for (let i = 5; i >= 0; i--) {
+                menu_view += `
+             <span style="float: right;"><a href="javascript:load_mini('/show_wt/${days[i]}')">${days[i]}&nbsp;&nbsp;&nbsp;&nbsp;</a></span>
+        `;
+            }
+            menu_view += '<br />'
+
+            var loca_view = ``
+            for (let j = 0; j < locs.length; j++) {
+                loca_view += `
+             <span>&nbsp;<a href="javascript:load_mini('/show_rec/${locs[j]}')">${locs[j]}&nbsp;</a></span>
+        `;
+            }
+            loca_view += '<br />'
+
+            document.getElementById("menu").innerHTML = menu_view;
+            document.getElementById("loca").innerHTML = loca_view;
+        }
+
+        var mapContainer = document.getElementById('map'), // 지도를 표시할 div  
+            mapOption = {
+                center: new kakao.maps.LatLng(35.5084, 127.7042), // 지도의 중심좌표
+                level: 13 // 지도의 확대 레벨
+            };
+
+        var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+        // 마커를 표시할 위치와 title 객체 배열입니다 
+        var positions = [
+            {
+                title: '서울',
+                latlng: new kakao.maps.LatLng(37.541, 126.986)
+            },
+            {
+                title: '경기',
+                latlng: new kakao.maps.LatLng(37.5864315, 127.0462765)
+            },
+            {
+                title: '충남',
+                latlng: new kakao.maps.LatLng(36.5184, 126.8)
+            },
+            {
+                title: '충북',
+                latlng: new kakao.maps.LatLng(36.8, 127.7)
+            },
+            {
+                title: '세종',
+                latlng: new kakao.maps.LatLng(36.5607, 127.2587),
+            },
+            {
+                title: '경북',
+                latlng: new kakao.maps.LatLng(36.4919, 128.8889),
+            },
+            {
+                title: '경남',
+                latlng: new kakao.maps.LatLng(35.4606, 128.2132),
+            },
+            {
+                title: '전남',
+                latlng: new kakao.maps.LatLng(34.8679, 126.991),
+            },
+            {
+                title: '전북',
+                latlng: new kakao.maps.LatLng(35.8242238, 127.1479532),
+            },
+            {
+                title: '부산',
+                latlng: new kakao.maps.LatLng(35.1795543, 129.0756416)
+            },
+            {
+                title: '대전',
+                latlng: new kakao.maps.LatLng(36.3504119, 127.3845475)
+            },
+            {
+                title: '제주',
+                latlng: new kakao.maps.LatLng(33.451393, 126.570738)
+            },
+            {
+                title: '대구',
+                latlng: new kakao.maps.LatLng(35.8714354, 128.601445)
+            },
+            {
+                title: '광주',
+                latlng: new kakao.maps.LatLng(35.1595454, 126.8526012)
+            },
+            {
+                title: '인천',
+                latlng: new kakao.maps.LatLng(37.4562557, 126.7052062)
+            },
+            {
+                title: '울산',
+                latlng: new kakao.maps.LatLng(35.5383773, 129.3113596)
+            },
+            {
+                title: '강원',
+                latlng: new kakao.maps.LatLng(37.8304115, 128.2260705)
+            }
+        ];
+
+        // 마커 이미지의 이미지 주소입니다
+        var imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
+
+        for (var i = 0; i < positions.length; i++) {
+
+            // 마커 이미지의 이미지 크기 입니다
+            var imageSize = new kakao.maps.Size(15, 24);
+
+            // 마커 이미지를 생성합니다    
+            var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
+
+            // 마커를 생성합니다
+            var marker = new kakao.maps.Marker({
+                map: map, // 마커를 표시할 지도
+                position: positions[i].latlng, // 마커를 표시할 위치
+                title: positions[i].title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+                image: markerImage // 마커 이미지 
+            });
+
+            // 마커를 클릭했을 때 마커 위에 표시할 인포윈도우를 생성합니다
+            var iwContent = '<div style="padding:5px;">Hello World!</div>', // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+                iwRemoveable = true; // removeable 속성을 ture 로 설정하면 인포윈도우를 닫을 수 있는 x버튼이 표시됩니다
+
+            // // 인포윈도우를 생성합니다
+            var infowindow = new kakao.maps.InfoWindow({
+                content: iwContent,
+                removable: iwRemoveable
+            });
+
+            // // 마커에 클릭이벤트를 등록합니다
+            kakao.maps.event.addListener(marker, 'click', function () {
+                // 마커 위에 인포윈도우를 표시합니다
+                infowindow.open(map, marker);
+            });
+        }
+
+    </script>
+    <div id="loca" style="margin-left: 50px;"></div>
+    <hr id="foot">
+    <div>
+        <p style="text-align: center; margin-top: 30px;">&copy; MAYWEATHER.corp.</p>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 페이지</title>
+    <link type="text/css" rel="stylesheet" href="mystyle.css">
+    <style>
+        h1 {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>관리자 페이지</h1>
+    <hr />
+    <nav id="menubar">
+        <ul>
+            <li style="float : left;"><a href="/main.html">메인페이지</a></li>
+            <li style="float : right;"><a href="/reservation.html">예약페이지</a></li>
+        </ul>
+    </nav>
+    <div class="main-container">
+
+        <div class="login-input-wrap">
+            <input type="button" value="전체 가게 정보 확인" onclick='document.targetURL.location.href="/select"' />
+        </div>
+
+        <div class="login-input-wrap">
+            <input type="button" value="전체 고객 정보 확인" onclick='document.targetURL.location.href="/userselect"' />
+        </div>
+
+        <div class="login-input-wrap">
+            <input type="button" value="전체 예약 정보 확인" onclick='document.targetURL.location.href="resselect"' />
+        </div>
+        <br>
+        <div>
+            <iframe name="targetURL" width="1000" height="1000" style="border: none" src=""></iframe>
+        </div>
+</body>
+
+</html>

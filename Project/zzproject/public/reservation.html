@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>예약 정보 확인 및 변경</title>
+    <link href="mystyle.css" type="text/css" rel="stylesheet">
+    <style>
+        h1 {
+            text-align: center;
+        }
+    </style>
+
+
+</head>
+
+<body>
+    <h1>예약 정보 확인 및 변경</h1>
+
+    <form action="/mongoinsert" target="targetURL" name="shopForm2" method="post">
+        <div class="main-container">
+            <div class="login-input-wrap">
+                <p><input type="text" name="resNumber" id="resNumber" placeholder="휴대전화 번호를 입력하세요. 예) 01012341234" />
+                </p>
+            </div>
+
+            <div class="login-input-wrap">
+                <p><input type="text" name="userId" id="userId" placeholder="아이디를 입력하세요." /></p>
+            </div>
+            <div class="login-input-wrap">
+                <p><input type="text" name="shopId" id="shopId" placeholder="예약한/변경을 원하는 가게 번호를 입력하세요." /></p>
+            </div>
+            <div class="login-input-wrap">
+                <p><input type="text" name="resDate" id="resDate" placeholder="예약한/변경을 원하는 날짜를 입력하세요. 예) 2023-00-00" />
+                </p>
+            </div>
+            <div class="login-input-wrap">
+                <p><input type="text" name="shopService" id="shopService" placeholder="예약한/변경을 원하는 서비스명을 입력하세요." /></p>
+            </div>
+
+
+            <br>
+            <div class=" form-buttons" style="text-align: center;">
+                <input type="button" value="예약확인"
+                    onclick='document.targetURL.location.href=" /mongoget?resNumber="+document.shopForm2.resNumber.value' /><button></button>
+
+
+                <button type="submit" formaction="/mongoupdate">예약 변경</button>&nbsp;&nbsp;
+                <button type="submit" formaction="/mongodelete">예약 취소</button>
+            </div>
+    </form>
+    <br>
+    <div style="display: flex; justify-content: center; align-items: center;">
+        <iframe name="targetURL" width="1000" height="1000" style="border: none" src="/mongolist"></iframe>
+    </div>
+</body>
+
+</html>
