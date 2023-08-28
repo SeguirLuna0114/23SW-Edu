@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>오늘의 업적 등록</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>오늘의 업적</h1>
+      <nav>
+        <ul>
+          <li><a href="input.html">오늘의 업적 등록</a></li>
+          <li><a href="point.html">업적 포인트 현황</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <h2>오늘의 업적</h2>
+      <form action="save" method="post">
+        <fieldset>
+          <legend>과목선택</legend>
+          <label for="subject">과목:</label>
+          <select id="subject" name="subject">
+            <option value="korean">국어</option>
+            <option value="math">수학</option>
+            <option value="english">영어</option>
+            <option value="science">과학</option>
+          </select>
+        </fieldset>
+        <fieldset>
+          <legend>업적입력</legend>
+          <label for="achievement">업적:</label>
+          <textarea id="achievement" name="achievement"></textarea>
+        </fieldset>
+        <input type="submit" value="Save" />
+      </form>
+    </main>
+  </body>
+</html>

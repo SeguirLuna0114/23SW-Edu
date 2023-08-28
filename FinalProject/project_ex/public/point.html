@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>업적 포인트 현황</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>오늘의 업적 등록</h1>
+      <nav>
+        <ul>
+          <li><a href="input.html">오늘의 업적 등록</a></li>
+          <li><a href="point.html">업적 포인트 현황</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <h2>업적 포인트 현황</h2>
+      <form action="points" method="get">
+        <label for="subject">과목:</label>
+        <select id="subject" name="subject">
+          <option value="korean">국어</option>
+          <option value="math">수학</option>
+          <option value="english">영어</option>
+          <option value="science">과학</option>
+        </select>
+        <input type="submit" value="포인트 조회" />
+      </form>
+      <div id="tree">
+        <img src="images/a.jpeg" alt="a" />
+      </div>
+      <p id="points">포인트: 0점</p>
+      <p id="salary">예상연봉: 0원</p>
+      <p id="spending">한끼당가격: 0원</p>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>
